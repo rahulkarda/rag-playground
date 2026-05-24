@@ -23,3 +23,10 @@ def fixed_size_chunks(text: str, size: int = 512, overlap: int = 64) -> Iterator
         if end == len(text):
             break
         pos += step
+
+
+def count_words(text: str) -> int:
+    """
+    Count the number of words in a text string.
+    """
+    return len(text.split())
