@@ -1,4 +1,4 @@
-"""Fixed-size text chunker. Starting point — recursive and semantic chunkers come next."""
+"""Fixed-size text chunker. Starting point  recursive and semantic chunkers come next."""
 from dataclasses import dataclass
 from typing import Iterator
 
@@ -13,6 +13,8 @@ class Chunk:
 def fixed_size_chunks(text: str, size: int = 512, overlap: int = 64) -> Iterator[Chunk]:
     if size <= 0:
         raise ValueError("size must be positive")
+    if overlap < 0:
+        raise ValueError("overlap must be non-negative")
     if overlap >= size:
         raise ValueError("overlap must be smaller than size")
     step = size - overlap
