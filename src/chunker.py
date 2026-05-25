@@ -33,3 +33,14 @@ def count_words(text: str) -> int:
     Count the number of words in a text string.
     """
     return len(text.split())
+
+
+def count_sentences(text: str) -> int:
+    """
+    Count the number of sentences in a text string.
+    A sentence is defined as ending with '.', '!', or '?'.
+    """
+    import re
+    # Matches sentences ending with ., !, or ?
+    sentences = re.findall(r'[^.!?]+[.!?]', text)
+    return len(sentences)
