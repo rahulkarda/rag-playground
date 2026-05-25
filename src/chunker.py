@@ -19,12 +19,13 @@ def fixed_size_chunks(text: str, size: int = 512, overlap: int = 64) -> Iterator
         raise ValueError("overlap must be smaller than size")
     step = size - overlap
     pos = 0
-    while pos < len(text):
-        end = min(pos + size, len(text))
+    text_len = len(text)
+    while pos < text_len:
+        end = min(pos + size, text_len)
         yield Chunk(text=text[pos:end], start=pos, end=end)
-        if end == len(text):
-            break
         pos += step
+        if pos >= text_len:
+            break
 
 
 def count_words(text: str) -> int:
