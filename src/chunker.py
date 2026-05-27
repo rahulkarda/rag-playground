@@ -72,3 +72,12 @@ def count_characters(text: str) -> int:
     Count the number of characters in a text string.
     """
     return len(text)
+
+
+def count_paragraphs(text: str) -> int:
+    """
+    Count the number of paragraphs in a text string.
+    A paragraph is defined as a block of text separated by one or more blank lines.
+    """
+    paragraphs = [p for p in text.split('\n\n') if p.strip()]
+    return len(paragraphs)
