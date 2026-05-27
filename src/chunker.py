@@ -1,4 +1,4 @@
-"""Fixed-size text chunker. Starting point   recursive and semantic chunkers come next."""
+"""Fixed-size text chunker. Starting point  ð recursive and semantic chunkers come next."""
 from dataclasses import dataclass
 from typing import Iterator
 
@@ -63,3 +63,10 @@ def count_sentences(text: str) -> int:
     # Matches sentences ending with ., !, or ?
     sentences = re.findall(r'[^.!?]+[.!?]', text)
     return len(sentences)
+
+
+def count_characters(text: str) -> int:
+    """
+    Count the number of characters in a text string.
+    """
+    return len(text)
