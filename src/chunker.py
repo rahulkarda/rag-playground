@@ -60,6 +60,8 @@ def count_sentences(text: str) -> int:
     A sentence is defined as ending with '.', '!', or '?'.
     """
     import re
+    if not text.strip():
+        return 0
     # Matches sentences ending with ., !, or ?
     sentences = re.findall(r'[^.!?]+[.!?]', text)
     return len(sentences)
