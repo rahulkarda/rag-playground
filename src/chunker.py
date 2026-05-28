@@ -81,3 +81,13 @@ def count_paragraphs(text: str) -> int:
     """
     paragraphs = [p for p in text.split('\n\n') if p.strip()]
     return len(paragraphs)
+
+
+def count_lines(text: str) -> int:
+    """
+    Count the number of lines in a text string.
+    A line is any sequence of characters separated by a newline ('\n').
+    """
+    if not text:
+        return 0
+    return len(text.splitlines())
