@@ -10,14 +10,14 @@ class Chunk:
     end: int
 
 
-def fixed_size_chunks(text: str, size: int = 512, overlap: int = 64) -> Iterator[Chunk]:
+def fixed_size_chunks(text: str, size: int = 512, overlap: int = 128) -> Iterator[Chunk]:
     """
     Split text into fixed-size chunks with optional overlap.
 
     Args:
         text (str): Input text to chunk.
         size (int, optional): Maximum length of each chunk (in characters). Default is 512.
-        overlap (int, optional): Number of characters to overlap between consecutive chunks. Default is 64.
+        overlap (int, optional): Number of characters to overlap between consecutive chunks. Default is 128.
 
     Yields:
         Chunk: A dataclass containing chunk text and its start/end character indices.
