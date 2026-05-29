@@ -91,3 +91,11 @@ def count_lines(text: str) -> int:
     if not text:
         return 0
     return len(text.splitlines())
+
+
+def count_tokens(text: str) -> int:
+    """
+    Count the number of tokens in a text string using whitespace splitting.
+    This is a rough proxy for true model tokens.
+    """
+    return len(text.strip().split()) if text.strip() else 0
