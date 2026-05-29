@@ -1,6 +1,6 @@
 """Fixed-size text chunker. Starting point  ð recursive and semantic chunkers come next."""
 from dataclasses import dataclass
-from typing import Iterator
+from typing import Iterator, List, Dict
 
 
 @dataclass
@@ -99,3 +99,42 @@ def count_tokens(text: str) -> int:
     This is a rough proxy for true model tokens.
     """
     return len(text.strip().split()) if text.strip() else 0
+
+
+def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
+    """
+    Compute summary statistics for a list of chunks:
+    - num_chunks
+    - avg_chunk_size_chars
+    - min_chunk_size_chars
+    - max_chunk_size_chars
+    - avg_chunk_word_count
+    - min_chunk_word_count
+    - max_chunk_word_count
+
+    Args:
+        chunks (List[Chunk]): List of chunk objects
+    Returns:
+        Dict[str, float]: Statistics summary
+    """
+    if not chunks:
+        return {
+            'num_chunks': 0,
+            'avg_chunk_size_chars': 0,
+            'min_chunk_size_chars': 0,
+            'max_chunk_size_chars': 0,
+            'avg_chunk_word_count': 0,
+            'min_chunk_word_count': 0,
+            'max_chunk_word_count': 0,
+        }
+    sizes = [len(c.text) for c in chunks]
+    word_counts = [count_words(c.text) for c in chunks]
+    return {
+        'num_chunks': len(chunks),
+        'avg_chunk_size_chars': sum(sizes) / len(sizes),
+        'min_chunk_size_chars': min(sizes),
+        'max_chunk_size_chars': max(sizes),
+        'avg_chunk_word_count': sum(word_counts) / len(word_counts),
+        'min_chunk_word_count': min(word_counts),
+        'max_chunk_word_count': max(word_counts),
+    }
