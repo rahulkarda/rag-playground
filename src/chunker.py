@@ -2,7 +2,6 @@
 from dataclasses import dataclass
 from typing import Iterator, List, Dict
 
-
 @dataclass
 class Chunk:
     text: str
@@ -138,3 +137,12 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
         'min_chunk_word_count': min(word_counts),
         'max_chunk_word_count': max(word_counts),
     }
+
+
+def split_whitespace(text: str) -> List[str]:
+    """
+    Split text into segments by contiguous whitespace.
+    Returns list of non-empty segments.
+    """
+    import re
+    return [s for s in re.split(r'\s+', text.strip()) if s]
