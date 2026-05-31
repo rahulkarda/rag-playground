@@ -1,4 +1,14 @@
-"""Fixed-size text chunker. Starting point   recursive and semantic chunkers come next."""
+"""
+A collection of chunking and text statistics utilities for retrieval-augmented generation (RAG).
+
+Includes:
+- Fixed-size chunker with configurable overlap
+- Whitespace chunker
+- Word, sentence, paragraph, line, character, token counters
+- Chunk statistics summarizer
+
+This module serves as the base for more advanced chunking strategies (recursive, semantic) and is designed for simple, readable experimentation on text splitting approaches.
+"""
 from dataclasses import dataclass
 from typing import Iterator, List, Dict
 
