@@ -1,3 +1,14 @@
+"""
+Recursive chunker for document splitting that respects markdown and code boundaries.
+
+This module implements chunking logic that attempts to split documents at semantic boundaries:
+- Markdown headers (e.g. #, ##, ###)
+- Code blocks (triple backticks)
+- Paragraphs (blank lines)
+If a segment is still too large, it falls back to splitting by sentences, and then by fixed-size chunks.
+
+Designed for use in retrieval-augmented generation pipelines where preserving context structure improves retrieval and answer generation.
+"""
 from dataclasses import dataclass
 from typing import Iterator, List
 import re
@@ -49,9 +60,7 @@ def recursive_chunks(text: str, max_size: int = 512, min_size: int = 128) -> Ite
 def _find_boundaries(text: str) -> List[int]:
     """
     Find boundary indices for markdown/code structure:
-    - Code blocks (```)
-    - Headers (#, ##, ###)
-    - Blank lines (paragraphs)
+    - Code blocks (```)\n    - Headers (#, ##, ###)\n    - Blank lines (paragraphs)
     Returns list of indices where a chunk could end.
     """
     boundaries = []
