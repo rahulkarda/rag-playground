@@ -1,4 +1,4 @@
-"""Fixed-size text chunker. Starting point  ð recursive and semantic chunkers come next."""
+"""Fixed-size text chunker. Starting point   recursive and semantic chunkers come next."""
 from dataclasses import dataclass
 from typing import Iterator, List, Dict
 
@@ -44,6 +44,28 @@ def fixed_size_chunks(text: str, size: int = 512, overlap: int = 128) -> Iterato
         pos += step
         if pos >= text_len:
             break
+
+
+def chunk_whitespace(text: str) -> List[Chunk]:
+    """
+    Split text into chunks by contiguous whitespace (e.g. paragraphs, blocks).
+    Returns list of Chunk objects with text and character indices.
+
+    Args:
+        text (str): Input text to chunk.
+    Returns:
+        List[Chunk]: List of Chunk objects.
+    """
+    import re
+    segments = [s for s in re.split(r'\s+', text.strip()) if s]
+    chunks = []
+    idx = 0
+    for seg in segments:
+        start = text.find(seg, idx)
+        end = start + len(seg)
+        chunks.append(Chunk(text=seg, start=start, end=end))
+        idx = end
+    return chunks
 
 
 def count_words(text: str) -> int:
