@@ -178,3 +178,16 @@ def split_whitespace(text: str) -> List[str]:
     """
     import re
     return [s for s in re.split(r'\s+', text.strip()) if s]
+
+
+def word_frequencies(text: str) -> Dict[str, int]:
+    """
+    Count frequency of each word in the text (case-insensitive).
+    Returns a dict mapping words to their counts.
+    """
+    import re
+    words = re.findall(r'\w+', text.lower())
+    freq = {}
+    for w in words:
+        freq[w] = freq.get(w, 0) + 1
+    return freq
