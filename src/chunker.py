@@ -58,8 +58,9 @@ def fixed_size_chunks(text: str, size: int = 512, overlap: int = 128) -> Iterato
 
 def chunk_whitespace(text: str) -> List[Chunk]:
     """
-    Split text into chunks by contiguous whitespace (e.g. paragraphs, blocks).
-    Returns list of Chunk objects with text and character indices.
+    Split text into chunks by contiguous non-whitespace sequences (words or blocks).
+    Each chunk consists of a segment of text (no whitespace), with start/end character indices in the original text.
+    Useful for breaking text into paragraphs or blocks separated by whitespace.
 
     Args:
         text (str): Input text to chunk.
@@ -71,6 +72,7 @@ def chunk_whitespace(text: str) -> List[Chunk]:
     chunks = []
     idx = 0
     for seg in segments:
+        # Find segment starting at or after idx
         start = text.find(seg, idx)
         end = start + len(seg)
         chunks.append(Chunk(text=seg, start=start, end=end))
