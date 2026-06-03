@@ -5,7 +5,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 ## Phase 1: chunking
 - [x] Fixed-size chunker with configurable overlap
 - [x] Recursive chunker that respects markdown/code boundaries
-- [ ] Semantic chunker using embedding similarity
+- [x] Semantic chunker using embedding similarity
 - [ ] Chunker comparison harness on a small corpus
 
 ## Phase 2: embeddings + storage
