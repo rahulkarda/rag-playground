@@ -193,3 +193,15 @@ def word_frequencies(text: str) -> Dict[str, int]:
     for w in words:
         freq[w] = freq.get(w, 0) + 1
     return freq
+
+
+def split_sentences(text: str) -> List[str]:
+    """
+    Split text into sentences using punctuation.
+    Each sentence ends with '.', '!', or '?'. Returns a list of sentences.
+    """
+    import re
+    sentences = re.findall(r'[^.!?]+[.!?]', text)
+    if not sentences:
+        return [text.strip()] if text.strip() else []
+    return sentences
