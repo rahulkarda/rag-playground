@@ -3,6 +3,20 @@ Semantic chunker: splits text into chunks where adjacent segments are semantical
 using embedding similarity threshold.
 
 Relies on sentence-transformers to embed sentences/segments, then greedily merges until similarity drops below threshold.
+
+Example usage:
+
+    from src.semantic_chunker import semantic_chunks
+    import numpy as np
+    # Dummy embed function (replace with real model)
+    def embed_fn(text):
+        np.random.seed(hash(text) % 2**32)
+        return np.random.rand(384)
+    text = "Sentence one. Sentence two. Sentence three."
+    chunks = list(semantic_chunks(text, embed_fn=embed_fn))
+    for chunk in chunks:
+        print(f"[{chunk.start}:{chunk.end}] {chunk.text}")
+
 """
 from dataclasses import dataclass
 from typing import Iterator, List, Optional
