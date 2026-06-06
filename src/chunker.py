@@ -173,19 +173,9 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     }
 
 
-def split_whitespace(text: str) -> List[str]:
+def word_freq(text: str) -> Dict[str, int]:
     """
-    Split text into segments by contiguous whitespace.
-    Returns list of non-empty segments.
-    """
-    import re
-    return [s for s in re.split(r'\s+', text.strip()) if s]
-
-
-def word_frequencies(text: str) -> Dict[str, int]:
-    """
-    Count frequency of each word in the text (case-insensitive).
-    Returns a dict mapping words to their counts.
+    Compute word frequencies for a text string (lowercased, alphanum words).
     """
     import re
     words = re.findall(r'\w+', text.lower())
@@ -205,3 +195,21 @@ def split_sentences(text: str) -> List[str]:
     if not sentences:
         return [text.strip()] if text.strip() else []
     return sentences
+
+
+def normalize_text(text: str) -> str:
+    """
+    Basic text normalization: lowercases, strips whitespace, replaces multiple spaces/newlines with single space.
+    Useful for preprocessing before chunking, embedding, or retrieval.
+
+    Args:
+        text (str): Input text.
+    Returns:
+        str: Normalized text.
+    """
+    import re
+    text = text.lower()
+    text = text.strip()
+    # Replace multiple whitespace (spaces, tabs, newlines) with single space
+    text = re.sub(r'\s+', ' ', text)
+    return text
