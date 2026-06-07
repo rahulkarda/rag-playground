@@ -6,7 +6,7 @@ This is the first paragraph.
 
 This is the second paragraph, with  more   spaces.
 
-This	is	the third with	tabs.
+This\tis\tthe third with\ttabs.
 """
     chunks = chunk_whitespace(text)
     for i, chunk in enumerate(chunks):
