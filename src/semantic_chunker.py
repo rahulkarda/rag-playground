@@ -33,8 +33,8 @@ def semantic_chunks(
     text: str,
     embed_fn,
     similarity_threshold: float = 0.55,
-    min_size: int = 128,
-    max_size: int = 512,
+    min_size: int = 64,
+    max_size: int = 256,
     split_fn: Optional = None
 ) -> Iterator[Chunk]:
     """
