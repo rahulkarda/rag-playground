@@ -6,7 +6,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Fixed-size chunker with configurable overlap
 - [x] Recursive chunker that respects markdown/code boundaries
 - [x] Semantic chunker using embedding similarity
-- [ ] Chunker comparison harness on a small corpus
+- [x] Chunker comparison harness on a small corpus
 
 ## Phase 2: embeddings + storage
 - [ ] Wrapper for sentence-transformers models
