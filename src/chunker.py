@@ -160,41 +160,28 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
             'min_chunk_word_count': 0,
             'max_chunk_word_count': 0,
         }
+
     sizes = [len(c.text) for c in chunks]
     word_counts = [count_words(c.text) for c in chunks]
+
+    num_chunks = len(chunks)
+    avg_size = sum(sizes) / num_chunks if num_chunks else 0
+    min_size = min(sizes) if sizes else 0
+    max_size = max(sizes) if sizes else 0
+
+    avg_wc = sum(word_counts) / num_chunks if num_chunks else 0
+    min_wc = min(word_counts) if word_counts else 0
+    max_wc = max(word_counts) if word_counts else 0
+
     return {
-        'num_chunks': len(chunks),
-        'avg_chunk_size_chars': sum(sizes) / len(sizes),
-        'min_chunk_size_chars': min(sizes),
-        'max_chunk_size_chars': max(sizes),
-        'avg_chunk_word_count': sum(word_counts) / len(word_counts),
-        'min_chunk_word_count': min(word_counts),
-        'max_chunk_word_count': max(word_counts),
+        'num_chunks': num_chunks,
+        'avg_chunk_size_chars': avg_size,
+        'min_chunk_size_chars': min_size,
+        'max_chunk_size_chars': max_size,
+        'avg_chunk_word_count': avg_wc,
+        'min_chunk_word_count': min_wc,
+        'max_chunk_word_count': max_wc,
     }
-
-
-def word_freq(text: str) -> Dict[str, int]:
-    """
-    Compute word frequencies for a text string (lowercased, alphanum words).
-    """
-    import re
-    words = re.findall(r'\w+', text.lower())
-    freq = {}
-    for w in words:
-        freq[w] = freq.get(w, 0) + 1
-    return freq
-
-
-def split_sentences(text: str) -> List[str]:
-    """
-    Split text into sentences using punctuation.
-    Each sentence ends with '.', '!', or '?'. Returns a list of sentences.
-    """
-    import re
-    sentences = re.findall(r'[^.!?]+[.!?]', text)
-    if not sentences:
-        return [text.strip()] if text.strip() else []
-    return sentences
 
 
 def normalize_text(text: str) -> str:
