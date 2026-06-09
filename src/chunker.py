@@ -134,6 +134,24 @@ def count_tokens(text: str) -> int:
     return len(text.strip().split()) if text.strip() else 0
 
 
+def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
+    """
+    Count the number of tokens in a text string using tiktoken for a given model.
+    Requires tiktoken package. Returns 0 if tiktoken is not installed.
+    Args:
+        text (str): Input text.
+        model (str): Model name (default: "gpt-3.5-turbo").
+    Returns:
+        int: Number of tokens.
+    """
+    try:
+        import tiktoken
+        enc = tiktoken.encoding_for_model(model)
+        return len(enc.encode(text))
+    except Exception:
+        return 0
+
+
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
     Compute summary statistics for a list of chunks:
@@ -168,19 +186,17 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     avg_size = sum(sizes) / num_chunks if num_chunks else 0
     min_size = min(sizes) if sizes else 0
     max_size = max(sizes) if sizes else 0
-
-    avg_wc = sum(word_counts) / num_chunks if num_chunks else 0
-    min_wc = min(word_counts) if word_counts else 0
-    max_wc = max(word_counts) if word_counts else 0
-
+    avg_word = sum(word_counts) / num_chunks if num_chunks else 0
+    min_word = min(word_counts) if word_counts else 0
+    max_word = max(word_counts) if word_counts else 0
     return {
         'num_chunks': num_chunks,
         'avg_chunk_size_chars': avg_size,
         'min_chunk_size_chars': min_size,
         'max_chunk_size_chars': max_size,
-        'avg_chunk_word_count': avg_wc,
-        'min_chunk_word_count': min_wc,
-        'max_chunk_word_count': max_wc,
+        'avg_chunk_word_count': avg_word,
+        'min_chunk_word_count': min_word,
+        'max_chunk_word_count': max_word,
     }
 
 
