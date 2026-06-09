@@ -7,6 +7,12 @@ This module implements chunking logic that attempts to split documents at semant
 - Paragraphs (blank lines)
 If a segment is still too large, it falls back to splitting by sentences, and then by fixed-size chunks.
 
+Boundary detection details:
+- Code blocks: detected by lines starting/ending with triple backticks (```). All content inside is treated as one chunk.
+- Markdown headers: lines beginning with one or more # (e.g. # Header) start new chunks.
+- Paragraphs: separated by two or more newlines (\n\n), each treated as a chunk boundary.
+- Fallback: if any chunk exceeds max_size, it is further split by sentences or fixed-size chars.
+
 Designed for use in retrieval-augmented generation pipelines where preserving context structure improves retrieval and answer generation.
 """
 from dataclasses import dataclass
@@ -60,7 +66,9 @@ def recursive_chunks(text: str, max_size: int = 512, min_size: int = 128) -> Ite
 def _find_boundaries(text: str) -> List[int]:
     """
     Find boundary indices for markdown/code structure:
-    - Code blocks (```)\n    - Headers (#, ##, ###)\n    - Blank lines (paragraphs)
+    - Code blocks (```)
+    - Headers (#, ##, ###)
+    - Blank lines (paragraphs)
     Returns list of indices where a chunk could end.
     """
     boundaries = []
