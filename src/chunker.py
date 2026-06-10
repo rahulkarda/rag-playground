@@ -91,13 +91,25 @@ def count_sentences(text: str) -> int:
     """
     Count the number of sentences in a text string.
     A sentence is defined as ending with '.', '!', or '?'.
+    Handles edge case where text lacks terminal punctuation by counting trailing content as one sentence.
     """
     import re
     if not text.strip():
         return 0
-    # Matches sentences ending with ., !, or ?
     sentences = re.findall(r'[^.!?]+[.!?]', text)
-    return len(sentences)
+    # Edge case: text ends without punctuation, so last bit isn't matched
+    remainder = text.strip()
+    if sentences:
+        last_match = sentences[-1]
+        matched_len = sum(len(s) for s in sentences)
+        leftover = remainder[matched_len:]
+        if leftover and leftover.strip():
+            return len(sentences) + 1
+        else:
+            return len(sentences)
+    else:
+        # No sentence-ending punctuation, treat entire string as one sentence if non-empty
+        return 1 if remainder else 0
 
 
 def count_characters(text: str) -> int:
@@ -166,37 +178,28 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     Args:
         chunks (List[Chunk]): List of chunk objects
     Returns:
-        Dict[str, float]: Statistics summary
+        Dict[str, float]: Summary statistics
     """
     if not chunks:
         return {
             'num_chunks': 0,
-            'avg_chunk_size_chars': 0,
-            'min_chunk_size_chars': 0,
-            'max_chunk_size_chars': 0,
-            'avg_chunk_word_count': 0,
-            'min_chunk_word_count': 0,
-            'max_chunk_word_count': 0,
+            'avg_chunk_size_chars': 0.0,
+            'min_chunk_size_chars': 0.0,
+            'max_chunk_size_chars': 0.0,
+            'avg_chunk_word_count': 0.0,
+            'min_chunk_word_count': 0.0,
+            'max_chunk_word_count': 0.0
         }
-
-    sizes = [len(c.text) for c in chunks]
-    word_counts = [count_words(c.text) for c in chunks]
-
-    num_chunks = len(chunks)
-    avg_size = sum(sizes) / num_chunks if num_chunks else 0
-    min_size = min(sizes) if sizes else 0
-    max_size = max(sizes) if sizes else 0
-    avg_word = sum(word_counts) / num_chunks if num_chunks else 0
-    min_word = min(word_counts) if word_counts else 0
-    max_word = max(word_counts) if word_counts else 0
+    sizes = [len(chunk.text) for chunk in chunks]
+    word_counts = [count_words(chunk.text) for chunk in chunks]
     return {
-        'num_chunks': num_chunks,
-        'avg_chunk_size_chars': avg_size,
-        'min_chunk_size_chars': min_size,
-        'max_chunk_size_chars': max_size,
-        'avg_chunk_word_count': avg_word,
-        'min_chunk_word_count': min_word,
-        'max_chunk_word_count': max_word,
+        'num_chunks': len(chunks),
+        'avg_chunk_size_chars': sum(sizes) / len(sizes),
+        'min_chunk_size_chars': min(sizes),
+        'max_chunk_size_chars': max(sizes),
+        'avg_chunk_word_count': sum(word_counts) / len(word_counts),
+        'min_chunk_word_count': min(word_counts),
+        'max_chunk_word_count': max(word_counts)
     }
 
 
