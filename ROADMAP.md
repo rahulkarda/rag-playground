@@ -9,7 +9,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Chunker comparison harness on a small corpus
 
 ## Phase 2: embeddings + storage
-- [ ] Wrapper for sentence-transformers models
+- [x] Wrapper for sentence-transformers models
 - [ ] Local FAISS index
 - [ ] Persistence to disk
 - [ ] Batch embed with progress
