@@ -3,7 +3,14 @@ from typing import List, Union, Callable
 
 class SentenceTransformerEmbedder:
     """
-    Wrapper for sentence-transformers models. Provides embed(text) and embed_batch(texts).
+    Wrapper for sentence-transformers models.
+    Provides embed(text) and embed_batch(texts) for generating embeddings.
+    
+    - Use embed(text) for a single string, returns a numpy array of shape (dim,)
+    - Use embed_batch(texts) for a list of strings, returns array of shape (len(texts), dim)
+    
+    Model selection: pass model_name to constructor (e.g. "all-MiniLM-L6-v2").
+    Batch encoding is recommended for efficiency on large corpora.
     """
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
         from sentence_transformers import SentenceTransformer
@@ -23,6 +30,7 @@ class SentenceTransformerEmbedder:
         return self.model.encode(texts, convert_to_numpy=True)
 
 # Factory for generic embed_fn
+
 
 def load_embedder(model_name: str = "all-MiniLM-L6-v2") -> Callable[[str], np.ndarray]:
     """
