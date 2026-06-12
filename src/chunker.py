@@ -166,40 +166,29 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Compute summary statistics for a list of chunks:
-    - num_chunks
-    - avg_chunk_size_chars
-    - min_chunk_size_chars
-    - max_chunk_size_chars
-    - avg_chunk_word_count
-    - min_chunk_word_count
-    - max_chunk_word_count
-
-    Args:
-        chunks (List[Chunk]): List of chunk objects
-    Returns:
-        Dict[str, float]: Summary statistics
+    Summarize statistics for a list of chunks: number, avg/min/max sizes, word counts.
+    Returns a dict. Handles empty chunk list gracefully.
     """
     if not chunks:
         return {
-            'num_chunks': 0,
-            'avg_chunk_size_chars': 0.0,
-            'min_chunk_size_chars': 0.0,
-            'max_chunk_size_chars': 0.0,
-            'avg_chunk_word_count': 0.0,
-            'min_chunk_word_count': 0.0,
-            'max_chunk_word_count': 0.0
+            "num_chunks": 0,
+            "avg_chunk_size_chars": 0.0,
+            "min_chunk_size_chars": 0,
+            "max_chunk_size_chars": 0,
+            "avg_chunk_word_count": 0.0,
+            "min_chunk_word_count": 0,
+            "max_chunk_word_count": 0,
         }
     sizes = [len(chunk.text) for chunk in chunks]
     word_counts = [count_words(chunk.text) for chunk in chunks]
     return {
-        'num_chunks': len(chunks),
-        'avg_chunk_size_chars': sum(sizes) / len(sizes),
-        'min_chunk_size_chars': min(sizes),
-        'max_chunk_size_chars': max(sizes),
-        'avg_chunk_word_count': sum(word_counts) / len(word_counts),
-        'min_chunk_word_count': min(word_counts),
-        'max_chunk_word_count': max(word_counts)
+        "num_chunks": len(chunks),
+        "avg_chunk_size_chars": sum(sizes) / len(sizes),
+        "min_chunk_size_chars": min(sizes),
+        "max_chunk_size_chars": max(sizes),
+        "avg_chunk_word_count": sum(word_counts) / len(word_counts),
+        "min_chunk_word_count": min(word_counts),
+        "max_chunk_word_count": max(word_counts),
     }
 
 
