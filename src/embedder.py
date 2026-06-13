@@ -1,13 +1,14 @@
 import numpy as np
-from typing import List, Union, Callable
+from typing import List, Union, Callable, Optional
 
 class SentenceTransformerEmbedder:
     """
     Wrapper for sentence-transformers models.
-    Provides embed(text) and embed_batch(texts) for generating embeddings.
+    Provides embed(text), embed_batch(texts), and embed_batch_with_progress(texts) for generating embeddings.
     
     - Use embed(text) for a single string, returns a numpy array of shape (dim,)
     - Use embed_batch(texts) for a list of strings, returns array of shape (len(texts), dim)
+    - Use embed_batch_with_progress(texts, batch_size=32, progress_fn=None) to embed large corpora with progress reporting
     
     Model selection: pass model_name to constructor (e.g. "all-MiniLM-L6-v2").
     Batch encoding is recommended for efficiency on large corpora.
@@ -28,6 +29,31 @@ class SentenceTransformerEmbedder:
         Embed a batch of texts. Returns array of shape (len(texts), dim).
         """
         return self.model.encode(texts, convert_to_numpy=True)
+
+    def embed_batch_with_progress(
+        self,
+        texts: List[str],
+        batch_size: int = 32,
+        progress_fn: Optional[Callable[[int, int], None]] = None
+    ) -> np.ndarray:
+        """
+        Embed a batch of texts in batches, reporting progress.
+        Args:
+            texts: List of input strings
+            batch_size: Number of texts per batch (default: 32)
+            progress_fn: Optional function(current, total) called after each batch
+        Returns:
+            Numpy array of shape (len(texts), dim)
+        """
+        total = len(texts)
+        embeddings = []
+        for i in range(0, total, batch_size):
+            batch = texts[i:i+batch_size]
+            batch_emb = self.model.encode(batch, convert_to_numpy=True)
+            embeddings.append(batch_emb)
+            if progress_fn:
+                progress_fn(min(i+batch_size, total), total)
+        return np.vstack(embeddings)
 
 # Factory for generic embed_fn
 

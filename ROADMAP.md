@@ -12,7 +12,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Wrapper for sentence-transformers models
 - [ ] Local FAISS index
 - [ ] Persistence to disk
-- [ ] Batch embed with progress
+- [x] Batch embed with progress
 
 ## Phase 3: retrievers
 - [ ] Dense retriever (FAISS)
