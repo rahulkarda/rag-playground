@@ -154,41 +154,61 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
         text (str): Input text.
         model (str): Model name (default: "gpt-3.5-turbo").
     Returns:
-        int: Number of tokens.
+        int: Number of tokens in the input text for the specified model.
     """
     try:
         import tiktoken
         enc = tiktoken.encoding_for_model(model)
         return len(enc.encode(text))
+    except ImportError:
+        return 0
     except Exception:
         return 0
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics for a list of chunks: number, avg/min/max sizes, word counts.
-    Returns a dict. Handles empty chunk list gracefully.
+    Summarize statistics about a list of text chunks.
+    Returns a dict with keys:
+      - num_chunks: Number of chunks
+      - avg_chunk_size_chars: Average chunk length in characters
+      - min_chunk_size_chars: Smallest chunk length (characters)
+      - max_chunk_size_chars: Largest chunk length (characters)
+      - avg_chunk_words: Average word count per chunk
+      - min_chunk_words: Smallest word count per chunk
+      - max_chunk_words: Largest word count per chunk
+      - avg_chunk_sentences: Average sentence count per chunk
+      - min_chunk_sentences: Smallest sentence count per chunk
+      - max_chunk_sentences: Largest sentence count per chunk
+    Each statistic is computed over the provided chunks. If the list is empty, all values are 0.
     """
     if not chunks:
         return {
-            "num_chunks": 0,
-            "avg_chunk_size_chars": 0.0,
-            "min_chunk_size_chars": 0,
-            "max_chunk_size_chars": 0,
-            "avg_chunk_word_count": 0.0,
-            "min_chunk_word_count": 0,
-            "max_chunk_word_count": 0,
+            'num_chunks': 0,
+            'avg_chunk_size_chars': 0,
+            'min_chunk_size_chars': 0,
+            'max_chunk_size_chars': 0,
+            'avg_chunk_words': 0,
+            'min_chunk_words': 0,
+            'max_chunk_words': 0,
+            'avg_chunk_sentences': 0,
+            'min_chunk_sentences': 0,
+            'max_chunk_sentences': 0,
         }
-    sizes = [len(chunk.text) for chunk in chunks]
-    word_counts = [count_words(chunk.text) for chunk in chunks]
+    sizes = [len(c.text) for c in chunks]
+    words = [count_words(c.text) for c in chunks]
+    sentences = [count_sentences(c.text) for c in chunks]
     return {
-        "num_chunks": len(chunks),
-        "avg_chunk_size_chars": sum(sizes) / len(sizes),
-        "min_chunk_size_chars": min(sizes),
-        "max_chunk_size_chars": max(sizes),
-        "avg_chunk_word_count": sum(word_counts) / len(word_counts),
-        "min_chunk_word_count": min(word_counts),
-        "max_chunk_word_count": max(word_counts),
+        'num_chunks': len(chunks),
+        'avg_chunk_size_chars': sum(sizes) / len(chunks),
+        'min_chunk_size_chars': min(sizes),
+        'max_chunk_size_chars': max(sizes),
+        'avg_chunk_words': sum(words) / len(chunks),
+        'min_chunk_words': min(words),
+        'max_chunk_words': max(words),
+        'avg_chunk_sentences': sum(sentences) / len(chunks),
+        'min_chunk_sentences': min(sentences),
+        'max_chunk_sentences': max(sentences),
     }
 
 
