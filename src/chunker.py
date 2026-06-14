@@ -60,7 +60,9 @@ def chunk_whitespace(text: str) -> List[Chunk]:
     """
     Split text into chunks by contiguous non-whitespace sequences (words or blocks).
     Each chunk consists of a segment of text (no whitespace), with start/end character indices in the original text.
-    Useful for breaking text into paragraphs or blocks separated by whitespace.
+
+    This function splits the text on runs of whitespace (spaces, tabs, newlines) and returns a list of Chunk objects,
+    where each chunk contains a non-whitespace segment and its position in the original text.
 
     Args:
         text (str): Input text to chunk.
@@ -72,7 +74,7 @@ def chunk_whitespace(text: str) -> List[Chunk]:
     chunks = []
     idx = 0
     for seg in segments:
-        # Find segment starting at or after idx
+        # Find the segment's start index after the previous segment
         start = text.find(seg, idx)
         end = start + len(seg)
         chunks.append(Chunk(text=seg, start=start, end=end))
@@ -154,7 +156,7 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
         text (str): Input text.
         model (str): Model name (default: "gpt-3.5-turbo").
     Returns:
-        int: Number of tokens in the input text for the specified model.
+        int: Number of tokens.
     """
     try:
         import tiktoken
@@ -168,19 +170,8 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics about a list of text chunks.
-    Returns a dict with keys:
-      - num_chunks: Number of chunks
-      - avg_chunk_size_chars: Average chunk length in characters
-      - min_chunk_size_chars: Smallest chunk length (characters)
-      - max_chunk_size_chars: Largest chunk length (characters)
-      - avg_chunk_words: Average word count per chunk
-      - min_chunk_words: Smallest word count per chunk
-      - max_chunk_words: Largest word count per chunk
-      - avg_chunk_sentences: Average sentence count per chunk
-      - min_chunk_sentences: Smallest sentence count per chunk
-      - max_chunk_sentences: Largest sentence count per chunk
-    Each statistic is computed over the provided chunks. If the list is empty, all values are 0.
+    Summarize chunk statistics for a list of Chunk objects.
+    Computes number of chunks, min/max/avg chunk size (characters), word count stats, and token stats.
     """
     if not chunks:
         return {
@@ -188,27 +179,27 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
             'avg_chunk_size_chars': 0,
             'min_chunk_size_chars': 0,
             'max_chunk_size_chars': 0,
-            'avg_chunk_words': 0,
-            'min_chunk_words': 0,
-            'max_chunk_words': 0,
-            'avg_chunk_sentences': 0,
-            'min_chunk_sentences': 0,
-            'max_chunk_sentences': 0,
+            'avg_chunk_size_words': 0,
+            'min_chunk_size_words': 0,
+            'max_chunk_size_words': 0,
+            'avg_chunk_size_tokens': 0,
+            'min_chunk_size_tokens': 0,
+            'max_chunk_size_tokens': 0,
         }
-    sizes = [len(c.text) for c in chunks]
-    words = [count_words(c.text) for c in chunks]
-    sentences = [count_sentences(c.text) for c in chunks]
+    sizes = [len(chunk.text) for chunk in chunks]
+    word_counts = [count_words(chunk.text) for chunk in chunks]
+    token_counts = [count_tokens(chunk.text) for chunk in chunks]
     return {
         'num_chunks': len(chunks),
-        'avg_chunk_size_chars': sum(sizes) / len(chunks),
+        'avg_chunk_size_chars': sum(sizes) / len(sizes),
         'min_chunk_size_chars': min(sizes),
         'max_chunk_size_chars': max(sizes),
-        'avg_chunk_words': sum(words) / len(chunks),
-        'min_chunk_words': min(words),
-        'max_chunk_words': max(words),
-        'avg_chunk_sentences': sum(sentences) / len(chunks),
-        'min_chunk_sentences': min(sentences),
-        'max_chunk_sentences': max(sentences),
+        'avg_chunk_size_words': sum(word_counts) / len(word_counts),
+        'min_chunk_size_words': min(word_counts),
+        'max_chunk_size_words': max(word_counts),
+        'avg_chunk_size_tokens': sum(token_counts) / len(token_counts),
+        'min_chunk_size_tokens': min(token_counts),
+        'max_chunk_size_tokens': max(token_counts),
     }
 
 
