@@ -1,6 +1,22 @@
 import numpy as np
 from typing import List, Union, Callable, Optional
 
+def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
+    """
+    Compute cosine similarity between two vectors.
+    Args:
+        a: numpy array
+        b: numpy array
+    Returns:
+        float: cosine similarity in [-1, 1]
+    """
+    a = np.asarray(a)
+    b = np.asarray(b)
+    denom = np.linalg.norm(a) * np.linalg.norm(b)
+    if denom == 0:
+        return 0.0
+    return float(np.dot(a, b) / denom)
+
 class SentenceTransformerEmbedder:
     """
     Wrapper for sentence-transformers models.
