@@ -2,7 +2,18 @@
 Semantic chunker: splits text into chunks where adjacent segments are semantically similar,
 using embedding similarity threshold.
 
-Relies on sentence-transformers to embed sentences/segments, then greedily merges until similarity drops below threshold.
+How it works:
+- The text is split into segments (default: sentences).
+- Embeddings are computed for each segment via embed_fn.
+- Adjacent segments are greedily merged if their cosine similarity exceeds the threshold,
+  and the merged chunk does not exceed max_size.
+- If a chunk is below min_size, it tries to merge further, even if similarity is low.
+- Chunk boundaries are thus determined by semantic similarity, not just syntax.
+
+Limitations:
+- Boundaries depend on the initial splitter (default: sentences).
+- Quality depends on embed_fn (embedding model).
+- Does not guarantee all chunks are within [min_size, max_size] but tries to enforce bounds.
 
 Example usage:
 
