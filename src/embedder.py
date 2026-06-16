@@ -71,6 +71,21 @@ class SentenceTransformerEmbedder:
                 progress_fn(min(i+batch_size, total), total)
         return np.vstack(embeddings)
 
+    def embed_batch_cosine_similarity(self, texts_a: List[str], texts_b: List[str]) -> np.ndarray:
+        """
+        Compute cosine similarities between two batches of texts.
+        Returns an array of shape (len(texts_a), len(texts_b)) with similarities.
+        Useful for comparing queries to documents, etc.
+        """
+        emb_a = self.embed_batch(texts_a)
+        emb_b = self.embed_batch(texts_b)
+        # Normalize
+        emb_a_norm = emb_a / (np.linalg.norm(emb_a, axis=1, keepdims=True) + 1e-8)
+        emb_b_norm = emb_b / (np.linalg.norm(emb_b, axis=1, keepdims=True) + 1e-8)
+        # Compute cosine similarity matrix
+        sims = np.dot(emb_a_norm, emb_b_norm.T)
+        return sims
+
 # Factory for generic embed_fn
 
 
