@@ -7,7 +7,7 @@ class FaissIndex:
     Wrapper for a local FAISS index for dense vector retrieval.
     Supports adding vectors, searching for nearest neighbors, and persistence.
     """
-    def __init__(self, dim: int, index_factory: str = "Flat", use_gpu: bool = False):
+    def __init__(self, dim: int, index_factory: str = "IVF32,Flat", use_gpu: bool = False):
         """
         Args:
             dim: embedding dimension
