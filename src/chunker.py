@@ -151,7 +151,7 @@ def count_tokens(text: str) -> int:
 def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
     """
     Count the number of tokens in a text string using tiktoken for a given model.
-    Requires tiktoken package. Returns 0 if tiktoken is unavailable.
+    Requires tiktoken package. Returns 0 if tiktoken is not installed.
     """
     try:
         import tiktoken
@@ -163,46 +163,28 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics about a list of chunks: number, avg/min/max sizes, avg word/sentence counts.
-    Returns dict with keys:
-        - num_chunks
-        - avg_chunk_size_chars
-        - min_chunk_size_chars
-        - max_chunk_size_chars
-        - avg_word_count
-        - min_word_count
-        - max_word_count
-        - avg_sentence_count
-        - min_sentence_count
-        - max_sentence_count
+    Summarize chunk statistics: number, avg/min/max sizes, word counts, etc.
     """
     if not chunks:
         return {
             "num_chunks": 0,
-            "avg_chunk_size_chars": 0,
+            "avg_chunk_size_chars": 0.0,
             "min_chunk_size_chars": 0,
             "max_chunk_size_chars": 0,
-            "avg_word_count": 0,
-            "min_word_count": 0,
-            "max_word_count": 0,
-            "avg_sentence_count": 0,
-            "min_sentence_count": 0,
-            "max_sentence_count": 0
+            "avg_chunk_size_words": 0.0,
+            "min_chunk_size_words": 0,
+            "max_chunk_size_words": 0,
         }
     sizes = [len(chunk.text) for chunk in chunks]
-    words = [count_words(chunk.text) for chunk in chunks]
-    sentences = [count_sentences(chunk.text) for chunk in chunks]
+    word_counts = [count_words(chunk.text) for chunk in chunks]
     return {
         "num_chunks": len(chunks),
-        "avg_chunk_size_chars": sum(sizes)/len(chunks),
-        "min_chunk_size_chars": min(sizes) if sizes else 0,
-        "max_chunk_size_chars": max(sizes) if sizes else 0,
-        "avg_word_count": sum(words)/len(chunks),
-        "min_word_count": min(words) if words else 0,
-        "max_word_count": max(words) if words else 0,
-        "avg_sentence_count": sum(sentences)/len(chunks),
-        "min_sentence_count": min(sentences) if sentences else 0,
-        "max_sentence_count": max(sentences) if sentences else 0
+        "avg_chunk_size_chars": sum(sizes) / len(sizes),
+        "min_chunk_size_chars": min(sizes),
+        "max_chunk_size_chars": max(sizes),
+        "avg_chunk_size_words": sum(word_counts) / len(word_counts),
+        "min_chunk_size_words": min(word_counts),
+        "max_chunk_size_words": max(word_counts),
     }
 
 
