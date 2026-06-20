@@ -151,51 +151,45 @@ def count_tokens(text: str) -> int:
 def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
     """
     Count the number of tokens in a text string using tiktoken for a given model.
-    Requires tiktoken package. Returns 0 if tiktoken is unavailable.
+    Requires tiktoken package. Returns 0 if tiktoken is not installed.
     """
     try:
         import tiktoken
-        enc = tiktoken.encoding_for_model(model)
-        return len(enc.encode(text))
-    except Exception:
+    except ImportError:
         return 0
+    enc = tiktoken.encoding_for_model(model)
+    return len(enc.encode(text))
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize chunk statistics: number, size (chars), word count, line count, paragraph count, token count.
-    Handles empty chunk lists gracefully.
-
+    Compute statistics for a list of chunks (number, size, words, etc).
     Args:
-        chunks (List[Chunk]): List of Chunk objects.
+        chunks: List[Chunk]
     Returns:
-        Dict[str, float]: Statistics summary.
+        dict with keys: num_chunks, avg_chunk_size_chars, min_chunk_size_chars, max_chunk_size_chars,
+            avg_chunk_words, min_chunk_words, max_chunk_words
     """
     if not chunks:
         return {
             "num_chunks": 0,
-            "avg_chunk_size_chars": 0.0,
+            "avg_chunk_size_chars": 0,
             "min_chunk_size_chars": 0,
             "max_chunk_size_chars": 0,
-            "avg_chunk_words": 0.0,
-            "avg_chunk_lines": 0.0,
-            "avg_chunk_paragraphs": 0.0,
-            "avg_chunk_tokens": 0.0
+            "avg_chunk_words": 0,
+            "min_chunk_words": 0,
+            "max_chunk_words": 0,
         }
-    sizes = [len(chunk.text) for chunk in chunks]
-    words = [count_words(chunk.text) for chunk in chunks]
-    lines = [count_lines(chunk.text) for chunk in chunks]
-    paragraphs = [count_paragraphs(chunk.text) for chunk in chunks]
-    tokens = [count_tokens(chunk.text) for chunk in chunks]
+    sizes = [len(c.text) for c in chunks]
+    words = [count_words(c.text) for c in chunks]
     return {
         "num_chunks": len(chunks),
         "avg_chunk_size_chars": sum(sizes) / len(sizes),
         "min_chunk_size_chars": min(sizes),
         "max_chunk_size_chars": max(sizes),
         "avg_chunk_words": sum(words) / len(words),
-        "avg_chunk_lines": sum(lines) / len(lines),
-        "avg_chunk_paragraphs": sum(paragraphs) / len(paragraphs),
-        "avg_chunk_tokens": sum(tokens) / len(tokens)
+        "min_chunk_words": min(words),
+        "max_chunk_words": max(words),
     }
 
 
@@ -215,3 +209,14 @@ def normalize_text(text: str) -> str:
     # Replace multiple whitespace (spaces, tabs, newlines) with single space
     text = re.sub(r'\s+', ' ', text)
     return text
+
+
+def batch_count_tokens(texts: List[str]) -> List[int]:
+    """
+    Count tokens for a batch of texts using simple whitespace splitting.
+    Args:
+        texts (List[str]): List of input strings.
+    Returns:
+        List[int]: Token counts for each text.
+    """
+    return [count_tokens(t) for t in texts]
