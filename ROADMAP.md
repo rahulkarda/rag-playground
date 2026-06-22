@@ -11,7 +11,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 ## Phase 2: embeddings + storage
 - [x] Wrapper for sentence-transformers models
 - [x] Local FAISS index
-- [ ] Persistence to disk
+- [x] Persistence to disk
 - [x] Batch embed with progress
 
 ## Phase 3: retrievers
