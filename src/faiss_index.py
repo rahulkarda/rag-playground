@@ -1,6 +1,6 @@
 import faiss
 import numpy as np
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 class FaissIndex:
     """
@@ -19,6 +19,7 @@ class FaissIndex:
         self.use_gpu = use_gpu
         self.index = self._create_index()
         self.ids = []  # track ids for lookup
+        self.metadata = {}  # id -> metadata dict
 
     def _create_index(self):
         index = faiss.index_factory(self.dim, self.index_factory)
@@ -27,21 +28,28 @@ class FaissIndex:
             index = faiss.index_cpu_to_gpu(res, 0, index)
         return index
 
-    def add(self, vectors: np.ndarray, ids: Optional[List[int]] = None):
+    def add(self, vectors: np.ndarray, ids: Optional[List[int]] = None, metadata: Optional[List[Dict[str, Any]]] = None):
         """
         Add vectors to the index.
         Args:
             vectors: numpy array of shape (num_vectors, dim)
             ids: optional list of ids (must be int)
+            metadata: optional list of metadata dicts
         """
         vectors = np.ascontiguousarray(vectors, dtype=np.float32)
+        n_vec = vectors.shape[0]
         if ids is not None:
             ids_arr = np.array(ids, dtype=np.int64)
             self.index.add_with_ids(vectors, ids_arr)
             self.ids.extend(ids)
         else:
             self.index.add(vectors)
-            self.ids.extend([len(self.ids) + i for i in range(vectors.shape[0])])
+            new_ids = [len(self.ids) + i for i in range(n_vec)]
+            self.ids.extend(new_ids)
+            ids = new_ids
+        if metadata is not None:
+            for idx, meta in zip(ids, metadata):
+                self.metadata[idx] = meta
 
     def search(self, query: np.ndarray, k: int = 5):
         """
@@ -77,3 +85,19 @@ class FaissIndex:
         instance = cls(dim, use_gpu=use_gpu)
         instance.index = index
         return instance
+
+    def dense_retrieve(self, query_vector: np.ndarray, k: int = 5) -> List[Dict[str, Any]]:
+        """
+        Retrieve top-k nearest items for a query vector.
+        Returns a list of dicts: {id, score, metadata}
+        """
+        D, I = self.search(query_vector, k)
+        results = []
+        for dist, idx in zip(D[0], I[0]):
+            item = {
+                "id": idx,
+                "score": float(dist),
+                "metadata": self.metadata.get(idx, None)
+            }
+            results.append(item)
+        return results
