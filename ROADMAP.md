@@ -15,7 +15,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Batch embed with progress
 
 ## Phase 3: retrievers
-- [ ] Dense retriever (FAISS)
+- [x] Dense retriever (FAISS)
 - [x] BM25 sparse retriever
 - [ ] Hybrid (RRF fusion)
 - [ ] Reranker stage
