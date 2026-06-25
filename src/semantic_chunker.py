@@ -43,7 +43,7 @@ class Chunk:
 def semantic_chunks(
     text: str,
     embed_fn,
-    similarity_threshold: float = 0.72,
+    similarity_threshold: float = 0.68,
     min_size: int = 64,
     max_size: int = 512,
     split_fn: Optional = None
