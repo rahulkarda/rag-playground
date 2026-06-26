@@ -151,41 +151,48 @@ def count_tokens(text: str) -> int:
 def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
     """
     Count the number of tokens in a text string using tiktoken for a given model.
-    Requires tiktoken
+    Requires tiktoken to be installed. If tiktoken is missing, returns -1 and prints a warning.
+    Args:
+        text (str): Input text.
+        model (str): Model name for encoding. Default: "gpt-3.5-turbo"
+    Returns:
+        int: Number of tokens, or -1 if tiktoken is not installed.
     """
     try:
         import tiktoken
     except ImportError:
-        raise ImportError("tiktoken must be installed to use count_tiktoken_tokens")
+        print("[chunker] WARNING: tiktoken not installed, returning -1 for token count.")
+        return -1
     enc = tiktoken.encoding_for_model(model)
     return len(enc.encode(text))
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics for a list of chunks.
-    Returns a dict with keys:
-        - num_chunks
-        - avg_chunk_size_chars
-        - min_chunk_size_chars
-        - max_chunk_size_chars
-        - avg_chunk_word_count
-        - min_chunk_word_count
-        - max_chunk_word_count
+    Compute statistics for a list of chunks: number, average/min/max chunk size (characters),
+    average/min/max word count, average/min/max sentence count.
+    Args:
+        chunks (List[Chunk]): List of Chunk objects
+    Returns:
+        Dict[str, float]: Statistical summary
     """
     if not chunks:
         return {
             'num_chunks': 0,
-            'avg_chunk_size_chars': 0.0,
-            'min_chunk_size_chars': 0.0,
-            'max_chunk_size_chars': 0.0,
-            'avg_chunk_word_count': 0.0,
-            'min_chunk_word_count': 0.0,
-            'max_chunk_word_count': 0.0,
+            'avg_chunk_size_chars': 0,
+            'min_chunk_size_chars': 0,
+            'max_chunk_size_chars': 0,
+            'avg_chunk_word_count': 0,
+            'min_chunk_word_count': 0,
+            'max_chunk_word_count': 0,
+            'avg_chunk_sentence_count': 0,
+            'min_chunk_sentence_count': 0,
+            'max_chunk_sentence_count': 0,
         }
-    sizes = [len(chunk.text) for chunk in chunks]
-    word_counts = [count_words(chunk.text) for chunk in chunks]
-    stats = {
+    sizes = [len(c.text) for c in chunks]
+    word_counts = [count_words(c.text) for c in chunks]
+    sentence_counts = [count_sentences(c.text) for c in chunks]
+    return {
         'num_chunks': len(chunks),
         'avg_chunk_size_chars': sum(sizes) / len(sizes),
         'min_chunk_size_chars': min(sizes),
@@ -193,13 +200,15 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
         'avg_chunk_word_count': sum(word_counts) / len(word_counts),
         'min_chunk_word_count': min(word_counts),
         'max_chunk_word_count': max(word_counts),
+        'avg_chunk_sentence_count': sum(sentence_counts) / len(sentence_counts),
+        'min_chunk_sentence_count': min(sentence_counts),
+        'max_chunk_sentence_count': max(sentence_counts),
     }
-    return stats
 
 
 def normalize_text(text: str) -> str:
     """
-    Normalize text: lowercase, strip, collapse whitespace.
+    Normalize text for chunking/retrieval: lowercase, strip, collapse whitespace.
     """
     import re
     text = text.lower()
