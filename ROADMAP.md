@@ -18,7 +18,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Dense retriever (FAISS)
 - [x] BM25 sparse retriever
 - [x] Hybrid (RRF fusion)
-- [ ] Reranker stage
+- [x] Reranker stage
 
 ## Phase 4: generation
 - [ ] Prompt assembly with citations
