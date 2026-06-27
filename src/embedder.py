@@ -1,3 +1,23 @@
+"""
+Embedding utilities for retrieval-augmented generation (RAG).
+
+This module provides:
+- Wrapper for sentence-transformers models (SentenceTransformerEmbedder)
+- Single and batch embedding functions
+- Progress-aware batch embedding for large corpora
+- Cosine similarity utilities for comparing embeddings
+- Factory for generic embed_fn (load_embedder)
+
+Usage:
+    from src.embedder import SentenceTransformerEmbedder
+    embedder = SentenceTransformerEmbedder("all-MiniLM-L6-v2")
+    emb = embedder.embed("Some text")
+    batch_emb = embedder.embed_batch(["Doc 1", "Doc 2"])
+    sims = embedder.embed_batch_cosine_similarity(["Q1"], ["D1", "D2"])
+
+The embedder class is designed for quick experimentation with different models and embedding strategies
+in RAG pipelines. It returns numpy arrays for easy integration with FAISS and retrieval modules.
+"""
 import numpy as np
 from typing import List, Union, Callable, Optional
 
