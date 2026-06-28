@@ -1,3 +1,26 @@
+"""
+DenseRetriever: FAISS-based dense vector search for RAG pipelines.
+
+This module provides:
+- DenseRetriever class for embedding-based retrieval
+- Integration with FaissIndex for fast nearest neighbor search
+- Simple interface: search(query_emb, k) returns top-k items
+- from_texts() classmethod for quick corpus setup from raw texts and embedder
+
+Usage:
+    from src.dense_retriever import DenseRetriever
+    retriever = DenseRetriever.from_texts(
+        texts=[...],
+        embed_fn=my_embedder.embed_batch,
+        ids=[...],
+        metadata=[...]
+    )
+    results = retriever.search(query_emb, k=5)
+    # results: list of dicts {id, score, metadata}
+
+This class is designed for experimentation with dense retrieval approaches in RAG,
+allowing easy switching between embedding models and storage strategies.
+"""
 import numpy as np
 from src.faiss_index import FaissIndex
 from typing import List, Dict, Any, Optional
