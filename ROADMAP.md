@@ -21,7 +21,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Reranker stage
 
 ## Phase 4: generation
-- [ ] Prompt assembly with citations
+- [x] Prompt assembly with citations
 - [ ] Answer generator wrapper (provider-agnostic)
 - [ ] Streaming output
 
