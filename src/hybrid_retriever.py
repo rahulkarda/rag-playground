@@ -1,3 +1,17 @@
+"""
+Hybrid dense+sparse retriever using Reciprocal Rank Fusion (RRF).
+
+This module combines dense (embedding-based) and sparse (BM25/keyword) retrieval results
+by fusing their rankings. It allows flexible integration of different retriever types:
+- dense_retriever: instance with .search(query_emb, k) -> List[Dict] (e.g. FAISS)
+- sparse_retriever: instance with .search(query, k) -> List[Dict] (e.g. BM25)
+
+RRF fusion scores each candidate as:
+    score = sum(1 / (rrf_k + rank)) for each source
+Where rank is the position in the result list. Top-k fused results are returned.
+
+Useful for hybrid RAG pipelines to combine semantic and keyword search signals.
+"""
 from typing import List, Dict, Any, Optional
 import numpy as np
 
