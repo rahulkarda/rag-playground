@@ -23,7 +23,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 ## Phase 4: generation
 - [x] Prompt assembly with citations
 - [x] Answer generator wrapper (provider-agnostic)
-- [ ] Streaming output
+- [x] Streaming output
 
 ## Phase 5: evaluation
 - [ ] Answer-relevance scorer
