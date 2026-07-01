@@ -24,11 +24,22 @@ class BM25Retriever:
         # Simple whitespace tokenizer
         return text.lower().split()
 
+    def normalize_query(self, query: str) -> str:
+        """
+        Normalize query text for retrieval: lowercase, strip, collapse whitespace.
+        """
+        import re
+        query = query.lower()
+        query = query.strip()
+        query = re.sub(r'\s+', ' ', query)
+        return query
+
     def search(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
         """
         Retrieve top-k docs for a query using BM25.
         Returns a list of dicts: {id, score, text, metadata}
         """
+        query = self.normalize_query(query)
         query_tokens = self._tokenize(query)
         scores = self.bm25.get_scores(query_tokens)
         top_idx = np.argsort(scores)[::-1][:k]
