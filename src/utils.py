@@ -1,6 +1,7 @@
 def flatten(lst):
     """
     Flatten a nested list (one level).
+
     Args:
         lst: list of lists or elements
     Returns:
@@ -20,7 +21,10 @@ def flatten(lst):
 
 def normalize_text(text: str) -> str:
     """
-    Normalize text for chunking/retrieval: lowercase, strip, collapse whitespace.
+    Normalize text for chunking/retrieval:
+    - Lowercase
+    - Strip leading/trailing whitespace
+    - Collapse runs of whitespace to single spaces
     Args:
         text (str): Input string
     Returns:
@@ -41,7 +45,9 @@ def count_tokens(text: str) -> int:
     Returns:
         int: Number of tokens
     """
-    return len(text.strip().split()) if text.strip() else 0
+    if not text.strip():
+        return 0
+    return len(text.strip().split())
 
 
 def batch_count_tokens(texts):
