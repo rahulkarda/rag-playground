@@ -32,7 +32,10 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
     """
     a = np.asarray(a)
     b = np.asarray(b)
-    denom = np.linalg.norm(a) * np.linalg.norm(b)
+    norm_a = np.linalg.norm(a)
+    norm_b = np.linalg.norm(b)
+    denom = norm_a * norm_b
+    # Avoid division by zero: if either vector is zero, return 0.0
     if denom == 0:
         return 0.0
     return float(np.dot(a, b) / denom)
