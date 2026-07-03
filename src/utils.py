@@ -1,3 +1,14 @@
+"""
+Utilities for chunking, retrieval, and text normalization.
+
+Provides:
+- flatten: flatten nested lists
+- normalize_text: lowercase, strip, collapse whitespace
+- count_tokens: whitespace token counter
+- batch_count_tokens: batch token counting
+
+Designed to support chunking and retrieval pipelines in RAG experiments.
+"""
 def flatten(lst):
     """
     Flatten a nested list (one level).
