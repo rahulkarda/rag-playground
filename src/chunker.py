@@ -149,7 +149,10 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
     """
     Count the number of tokens in a text string using tiktoken for a given model.
     Requires tiktoken package.
+    Returns 0 if text is empty.
     """
+    if not text or not text.strip():
+        return 0
     try:
         import tiktoken
     except ImportError:
@@ -160,39 +163,32 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics for a list of chunks.
+    Compute chunk statistics: number, avg/min/max sizes, avg word/token count, etc.
+    Args:
+        chunks: List of Chunk objects
     Returns:
-        Dict[str, float]: stats including num_chunks, avg/min/max chunk sizes (chars, words, tokens), etc.
+        Dict of stats
     """
     if not chunks:
         return {
             'num_chunks': 0,
-            'avg_chunk_size_chars': 0,
-            'min_chunk_size_chars': 0,
-            'max_chunk_size_chars': 0,
-            'avg_chunk_size_words': 0,
-            'min_chunk_size_words': 0,
-            'max_chunk_size_words': 0,
-            'avg_chunk_size_tokens': 0,
-            'min_chunk_size_tokens': 0,
-            'max_chunk_size_tokens': 0
+            'avg_chunk_size_chars': 0.0,
+            'min_chunk_size_chars': 0.0,
+            'max_chunk_size_chars': 0.0,
+            'avg_chunk_words': 0.0,
+            'avg_chunk_tokens': 0.0,
         }
-    sizes_chars = [len(chunk.text) for chunk in chunks]
-    sizes_words = [count_words(chunk.text) for chunk in chunks]
-    sizes_tokens = [count_tokens(chunk.text) for chunk in chunks]
-    stats = {
+    sizes = [len(c.text) for c in chunks]
+    words = [count_words(c.text) for c in chunks]
+    tokens = [count_tokens(c.text) for c in chunks]
+    return {
         'num_chunks': len(chunks),
-        'avg_chunk_size_chars': sum(sizes_chars) / len(chunks),
-        'min_chunk_size_chars': min(sizes_chars),
-        'max_chunk_size_chars': max(sizes_chars),
-        'avg_chunk_size_words': sum(sizes_words) / len(chunks),
-        'min_chunk_size_words': min(sizes_words),
-        'max_chunk_size_words': max(sizes_words),
-        'avg_chunk_size_tokens': sum(sizes_tokens) / len(chunks),
-        'min_chunk_size_tokens': min(sizes_tokens),
-        'max_chunk_size_tokens': max(sizes_tokens)
+        'avg_chunk_size_chars': sum(sizes) / len(chunks),
+        'min_chunk_size_chars': min(sizes),
+        'max_chunk_size_chars': max(sizes),
+        'avg_chunk_words': sum(words) / len(chunks),
+        'avg_chunk_tokens': sum(tokens) / len(chunks),
     }
-    return stats
 
 
 def normalize_text(text: str) -> str:
