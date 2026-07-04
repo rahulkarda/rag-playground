@@ -56,7 +56,7 @@ def count_tokens(text: str) -> int:
     Returns:
         int: Number of tokens
     """
-    if not text.strip():
+    if not text or not text.strip():
         return 0
     return len(text.strip().split())
 
