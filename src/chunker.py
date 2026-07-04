@@ -156,39 +156,56 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
     try:
         import tiktoken
     except ImportError:
-        raise ImportError("tiktoken is required for token counting by model")
+        raise ImportError("tiktoken is required for count_tiktoken_tokens")
     enc = tiktoken.encoding_for_model(model)
     return len(enc.encode(text))
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize chunk statistics: number, avg/min/max chunk size (chars), avg/min/max word count.
+    Summarize statistics for a list of chunks:
+    - number of chunks
+    - average/min/max chunk size (characters)
+    - average/min/max chunk word count
+    - total characters and words
     Args:
-        chunks (List[Chunk]): List of Chunk objects
+        chunks (List[Chunk]): list of Chunk objects
     Returns:
-        Dict[str, float]: Statistics summary
+        Dict[str, float]: statistics summary
     """
-    if not chunks:
+    num_chunks = len(chunks)
+    if num_chunks == 0:
         return {
-            'num_chunks': 0,
-            'avg_chunk_size_chars': 0.0,
-            'min_chunk_size_chars': 0.0,
-            'max_chunk_size_chars': 0.0,
-            'avg_chunk_word_count': 0.0,
-            'min_chunk_word_count': 0.0,
-            'max_chunk_word_count': 0.0
+            "num_chunks": 0,
+            "avg_chunk_size_chars": 0,
+            "min_chunk_size_chars": 0,
+            "max_chunk_size_chars": 0,
+            "avg_chunk_word_count": 0,
+            "min_chunk_word_count": 0,
+            "max_chunk_word_count": 0,
+            "total_chars": 0,
+            "total_words": 0
         }
     sizes = [len(chunk.text) for chunk in chunks]
     word_counts = [count_words(chunk.text) for chunk in chunks]
+    avg_chars = sum(sizes) / num_chunks
+    min_chars = min(sizes)
+    max_chars = max(sizes)
+    avg_words = sum(word_counts) / num_chunks
+    min_words = min(word_counts)
+    max_words = max(word_counts)
+    total_chars = sum(sizes)
+    total_words = sum(word_counts)
     return {
-        'num_chunks': len(chunks),
-        'avg_chunk_size_chars': sum(sizes) / len(sizes),
-        'min_chunk_size_chars': min(sizes),
-        'max_chunk_size_chars': max(sizes),
-        'avg_chunk_word_count': sum(word_counts) / len(word_counts),
-        'min_chunk_word_count': min(word_counts),
-        'max_chunk_word_count': max(word_counts)
+        "num_chunks": num_chunks,
+        "avg_chunk_size_chars": avg_chars,
+        "min_chunk_size_chars": min_chars,
+        "max_chunk_size_chars": max_chars,
+        "avg_chunk_word_count": avg_words,
+        "min_chunk_word_count": min_words,
+        "max_chunk_word_count": max_words,
+        "total_chars": total_chars,
+        "total_words": total_words
     }
 
 
