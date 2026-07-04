@@ -19,13 +19,13 @@ class Chunk:
     end: int
 
 
-def fixed_size_chunks(text: str, size: int = 512, overlap: int = 128) -> Iterator[Chunk]:
+def fixed_size_chunks(text: str, size: int = 1024, overlap: int = 128) -> Iterator[Chunk]:
     """
     Split text into fixed-size chunks with optional overlap.
 
     Args:
         text (str): Input text to chunk.
-        size (int, optional): Maximum length of each chunk (in characters). Default is 512.
+        size (int, optional): Maximum length of each chunk (in characters). Default is 1024.
         overlap (int, optional): Number of characters to overlap between consecutive chunks. Default is 128.
 
     Yields:
@@ -163,51 +163,31 @@ def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics for a list of chunks:
-    - number of chunks
-    - average/min/max chunk size (characters)
-    - average/min/max chunk word count
-    - total characters and words
-    Args:
-        chunks (List[Chunk]): list of Chunk objects
-    Returns:
-        Dict[str, float]: statistics summary
+    Summarize chunk statistics: number, average/min/max size, word counts, etc.
     """
-    num_chunks = len(chunks)
-    if num_chunks == 0:
+    if not chunks:
         return {
             "num_chunks": 0,
-            "avg_chunk_size_chars": 0,
+            "avg_chunk_size_chars": 0.0,
             "min_chunk_size_chars": 0,
             "max_chunk_size_chars": 0,
-            "avg_chunk_word_count": 0,
-            "min_chunk_word_count": 0,
-            "max_chunk_word_count": 0,
-            "total_chars": 0,
-            "total_words": 0
+            "avg_chunk_words": 0.0,
+            "min_chunk_words": 0,
+            "max_chunk_words": 0,
         }
-    sizes = [len(chunk.text) for chunk in chunks]
-    word_counts = [count_words(chunk.text) for chunk in chunks]
-    avg_chars = sum(sizes) / num_chunks
-    min_chars = min(sizes)
-    max_chars = max(sizes)
-    avg_words = sum(word_counts) / num_chunks
-    min_words = min(word_counts)
-    max_words = max(word_counts)
-    total_chars = sum(sizes)
-    total_words = sum(word_counts)
+    sizes = [len(c.text) for c in chunks]
+    words = [count_words(c.text) for c in chunks]
     return {
-        "num_chunks": num_chunks,
-        "avg_chunk_size_chars": avg_chars,
-        "min_chunk_size_chars": min_chars,
-        "max_chunk_size_chars": max_chars,
-        "avg_chunk_word_count": avg_words,
-        "min_chunk_word_count": min_words,
-        "max_chunk_word_count": max_words,
-        "total_chars": total_chars,
-        "total_words": total_words
+        "num_chunks": len(chunks),
+        "avg_chunk_size_chars": sum(sizes) / len(chunks),
+        "min_chunk_size_chars": min(sizes),
+        "max_chunk_size_chars": max(sizes),
+        "avg_chunk_words": sum(words) / len(chunks),
+        "min_chunk_words": min(words),
+        "max_chunk_words": max(words),
     }
 
+# Utilities for batch token counting
 
 def normalize_text(text: str) -> str:
     """
