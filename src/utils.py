@@ -7,6 +7,7 @@ Provides:
 - batch_normalize_text: batch text normalization
 - count_tokens: whitespace token counter
 - batch_count_tokens: batch token counting
+- batch_strip: batch whitespace removal
 
 Designed to support chunking and retrieval pipelines in RAG experiments.
 """
@@ -82,3 +83,14 @@ def batch_count_tokens(texts):
         List[int]: Token counts for each text.
     """
     return [count_tokens(t) for t in texts]
+
+
+def batch_strip(texts):
+    """
+    Remove leading/trailing whitespace from each text in a batch.
+    Args:
+        texts (List[str]): List of input strings.
+    Returns:
+        List[str]: Stripped strings.
+    """
+    return [t.strip() if isinstance(t, str) else t for t in texts]
