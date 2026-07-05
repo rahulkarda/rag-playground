@@ -1,4 +1,4 @@
-from src.utils import flatten, normalize_text, count_tokens, batch_count_tokens
+from src.utils import flatten, normalize_text, count_tokens, batch_count_tokens, batch_strip
 
 if __name__ == "__main__":
     # Test flatten
@@ -20,3 +20,8 @@ if __name__ == "__main__":
     texts = ["first line", "second line with more words", "   "]
     batch_counts = batch_count_tokens(texts)
     print(f"batch_count_tokens({texts}) -> {batch_counts}")
+
+    # Test batch_strip
+    batch_texts = ["  leading", "trailing  ", " both ", "no_whitespace", "\t tabbed\n"]
+    stripped = batch_strip(batch_texts)
+    print(f"batch_strip({batch_texts}) -> {stripped}")
