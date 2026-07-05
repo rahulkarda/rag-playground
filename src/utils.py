@@ -4,6 +4,7 @@ Utilities for chunking, retrieval, and text normalization.
 Provides:
 - flatten: flatten nested lists
 - normalize_text: lowercase, strip, collapse whitespace
+- batch_normalize_text: batch text normalization
 - count_tokens: whitespace token counter
 - batch_count_tokens: batch token counting
 
@@ -46,6 +47,17 @@ def normalize_text(text: str) -> str:
     text = text.strip()
     text = re.sub(r'\s+', ' ', text)
     return text
+
+
+def batch_normalize_text(texts):
+    """
+    Normalize a batch of texts for chunking/retrieval.
+    Args:
+        texts (List[str]): List of input strings
+    Returns:
+        List[str]: Normalized strings
+    """
+    return [normalize_text(t) for t in texts]
 
 
 def count_tokens(text: str) -> int:
