@@ -93,4 +93,4 @@ def batch_strip(texts):
     Returns:
         List[str]: Stripped strings.
     """
-    return [t.strip() if isinstance(t, str) else t for t in texts]
+    return [t.strip() if isinstance(t, str) and t is not None else t for t in texts]
