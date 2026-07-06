@@ -3,6 +3,7 @@ Utilities for chunking, retrieval, and text normalization.
 
 Provides:
 - flatten: flatten nested lists
+- batch_flatten: flatten each element in a batch (list of lists)
 - normalize_text: lowercase, strip, collapse whitespace
 - batch_normalize_text: batch text normalization
 - count_tokens: whitespace token counter
@@ -30,6 +31,22 @@ def flatten(lst):
         else:
             flat.append(el)
     return flat
+
+
+def batch_flatten(lists):
+    """
+    Flatten each element in a batch (list of lists or elements).
+    Args:
+        lists: Iterable of lists or elements
+    Returns:
+        List: Each element flattened one level if it's a list, else unchanged
+    Example:
+        >>> batch_flatten([[1, 2], [3], 4])
+        [[1, 2], [3], 4]  # only flattens each element
+        >>> batch_flatten([[1, 2], [3, 4], [5]])
+        [[1, 2], [3, 4], [5]]
+    """
+    return [flatten(el) if isinstance(el, list) else el for el in lists]
 
 
 def normalize_text(text: str) -> str:
