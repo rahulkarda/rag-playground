@@ -11,6 +11,14 @@ Provides:
 - batch_strip: batch whitespace removal
 - batch_is_empty: batch empty-checking utility
 
+Batch utilities:
+- All batch_* functions operate on lists and return lists, for easy mapping in chunking/retrieval pipelines.
+- batch_flatten: applies flatten to each element (not full batch flatten)
+- batch_normalize_text: maps normalize_text
+- batch_count_tokens: maps count_tokens
+- batch_strip: removes whitespace from each string
+- batch_is_empty: checks if each string in batch is empty or whitespace
+
 Designed to support chunking and retrieval pipelines in RAG experiments.
 """
 
