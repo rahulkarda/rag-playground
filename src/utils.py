@@ -2,7 +2,7 @@
 Utilities for chunking, retrieval, and text normalization.
 
 Provides:
-- flatten: flatten nested lists
+- flatten: flatten nested lists (one level)
 - batch_flatten: flatten each element in a batch (list of lists)
 - normalize_text: lowercase, strip, collapse whitespace
 - batch_normalize_text: batch text normalization
@@ -12,14 +12,15 @@ Provides:
 
 Designed to support chunking and retrieval pipelines in RAG experiments.
 """
+
 def flatten(lst):
     """
     Flatten a nested list (one level).
 
     Args:
-        lst: list of lists or elements
+        lst (list): list of lists or elements
     Returns:
-        flat list
+        list: flattened list
     Example:
         >>> flatten([[1, 2], [3], 4])
         [1, 2, 3, 4]
@@ -35,11 +36,11 @@ def flatten(lst):
 
 def batch_flatten(lists):
     """
-    Flatten each element in a batch (list of lists or elements).
+    Flatten each element in a batch (one level if it's a list, else unchanged).
     Args:
-        lists: Iterable of lists or elements
+        lists (Iterable): Iterable of lists or elements
     Returns:
-        List: Each element flattened one level if it's a list, else unchanged
+        list: Each element flattened one level if it's a list, else unchanged
     Example:
         >>> batch_flatten([[1, 2], [3], 4])
         [[1, 2], [3], 4]  # only flattens each element
@@ -49,7 +50,7 @@ def batch_flatten(lists):
     return [flatten(el) if isinstance(el, list) else el for el in lists]
 
 
-def normalize_text(text: str) -> str:
+def normalize_text(text):
     """
     Normalize text for chunking/retrieval:
     - Lowercase
@@ -71,14 +72,14 @@ def batch_normalize_text(texts):
     """
     Normalize a batch of texts for chunking/retrieval.
     Args:
-        texts (List[str]): List of input strings
+        texts (list of str): List of input strings
     Returns:
-        List[str]: Normalized strings
+        list of str: Normalized strings
     """
     return [normalize_text(t) for t in texts]
 
 
-def count_tokens(text: str) -> int:
+def count_tokens(text):
     """
     Count the number of tokens in a text string using whitespace splitting.
     Args:
@@ -95,9 +96,9 @@ def batch_count_tokens(texts):
     """
     Count tokens for a batch of texts using simple whitespace splitting.
     Args:
-        texts (List[str]): List of input strings.
+        texts (list of str): List of input strings.
     Returns:
-        List[int]: Token counts for each text.
+        list of int: Token counts for each text.
     """
     return [count_tokens(t) for t in texts]
 
@@ -106,8 +107,8 @@ def batch_strip(texts):
     """
     Remove leading/trailing whitespace from each text in a batch.
     Args:
-        texts (List[str]): List of input strings.
+        texts (list of str): List of input strings.
     Returns:
-        List[str]: Stripped strings.
+        list of str: Stripped strings.
     """
     return [t.strip() if isinstance(t, str) and t is not None else t for t in texts]
