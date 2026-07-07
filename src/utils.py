@@ -9,6 +9,7 @@ Provides:
 - count_tokens: whitespace token counter
 - batch_count_tokens: batch token counting
 - batch_strip: batch whitespace removal
+- batch_is_empty: batch empty-checking utility
 
 Designed to support chunking and retrieval pipelines in RAG experiments.
 """
@@ -112,3 +113,17 @@ def batch_strip(texts):
         list of str: Stripped strings.
     """
     return [t.strip() if isinstance(t, str) and t is not None else t for t in texts]
+
+
+def batch_is_empty(texts):
+    """
+    Check if each text in a batch is empty or only whitespace.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of bool: True if empty or only whitespace, else False for each text.
+    Example:
+        >>> batch_is_empty(["", "   ", "hello", None])
+        [True, True, False, True]
+    """
+    return [not (t and str(t).strip()) for t in texts]
