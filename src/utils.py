@@ -11,6 +11,7 @@ Provides:
 - batch_strip: batch whitespace removal
 - batch_is_empty: batch empty-checking utility
 - batch_count_words: batch word counting utility
+- batch_count_sentences: batch sentence counting utility
 
 Batch utilities:
 - All batch_* functions operate on lists and return lists, for easy mapping in chunking/retrieval pipelines.
@@ -18,6 +19,7 @@ Batch utilities:
 - batch_normalize_text: maps normalize_text
 - batch_count_tokens: maps count_tokens
 - batch_count_words: maps count_words
+- batch_count_sentences: maps count_sentences
 - batch_strip: removes whitespace from each string
 - batch_is_empty: checks if each string in batch is empty or whitespace
 
@@ -164,3 +166,43 @@ def batch_count_words(texts):
         [2, 3, 0]
     """
     return [count_words(t) for t in texts]
+
+
+def count_sentences(text):
+    """
+    Count the number of sentences in a text string.
+    A sentence is defined as ending with '.', '!', or '?'.
+    Handles edge case where text lacks terminal punctuation by counting trailing content as one sentence.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of sentences
+    """
+    import re
+    if not text or not text.strip():
+        return 0
+    sentences = re.findall(r'[^.!?]+[.!?]', text)
+    remainder = text.strip()
+    if sentences:
+        matched_len = sum(len(s) for s in sentences)
+        leftover = remainder[matched_len:]
+        if leftover and leftover.strip():
+            return len(sentences) + 1
+        else:
+            return len(sentences)
+    else:
+        return 1 if remainder else 0
+
+
+def batch_count_sentences(texts):
+    """
+    Count sentences for a batch of texts using basic punctuation rules.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Sentence counts for each text.
+    Example:
+        >>> batch_count_sentences(["Hi! How are you?", "No punctuation here", " "])
+        [2, 1, 0]
+    """
+    return [count_sentences(t) for t in texts]
