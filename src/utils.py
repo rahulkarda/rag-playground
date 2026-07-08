@@ -12,6 +12,7 @@ Provides:
 - batch_is_empty: batch empty-checking utility
 - batch_count_words: batch word counting utility
 - batch_count_sentences: batch sentence counting utility
+- batch_count_characters: batch character counting utility
 
 Batch utilities:
 - All batch_* functions operate on lists and return lists, for easy mapping in chunking/retrieval pipelines.
@@ -20,6 +21,7 @@ Batch utilities:
 - batch_count_tokens: maps count_tokens
 - batch_count_words: maps count_words
 - batch_count_sentences: maps count_sentences
+- batch_count_characters: maps count_characters
 - batch_strip: removes whitespace from each string
 - batch_is_empty: checks if each string in batch is empty or whitespace
 
@@ -206,3 +208,33 @@ def batch_count_sentences(texts):
         [2, 1, 0]
     """
     return [count_sentences(t) for t in texts]
+
+
+def count_characters(text):
+    """
+    Count the number of characters in a text string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of characters
+    Example:
+        >>> count_characters("hello")
+        5
+    """
+    if not text:
+        return 0
+    return len(text)
+
+
+def batch_count_characters(texts):
+    """
+    Count characters for a batch of texts.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Character counts for each text.
+    Example:
+        >>> batch_count_characters(["abc", "hello world", " ", ""])
+        [3, 11, 1, 0]
+    """
+    return [count_characters(t) for t in texts]
