@@ -10,12 +10,14 @@ Provides:
 - batch_count_tokens: batch token counting
 - batch_strip: batch whitespace removal
 - batch_is_empty: batch empty-checking utility
+- batch_count_words: batch word counting utility
 
 Batch utilities:
 - All batch_* functions operate on lists and return lists, for easy mapping in chunking/retrieval pipelines.
 - batch_flatten: applies flatten to each element (not full batch flatten)
 - batch_normalize_text: maps normalize_text
 - batch_count_tokens: maps count_tokens
+- batch_count_words: maps count_words
 - batch_strip: removes whitespace from each string
 - batch_is_empty: checks if each string in batch is empty or whitespace
 
@@ -135,3 +137,30 @@ def batch_is_empty(texts):
         [True, True, False, True]
     """
     return [not (t and str(t).strip()) for t in texts]
+
+
+def count_words(text):
+    """
+    Count the number of words in a text string using whitespace splitting.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of words
+    """
+    if not text or not text.strip():
+        return 0
+    return len(text.strip().split())
+
+
+def batch_count_words(texts):
+    """
+    Count words for a batch of texts using simple whitespace splitting.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Word counts for each text.
+    Example:
+        >>> batch_count_words(["hello world", "one two three", "   "])
+        [2, 3, 0]
+    """
+    return [count_words(t) for t in texts]
