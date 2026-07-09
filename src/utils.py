@@ -94,30 +94,6 @@ def batch_normalize_text(texts):
     return [normalize_text(t) for t in texts]
 
 
-def count_tokens(text):
-    """
-    Count the number of tokens in a text string using whitespace splitting.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of tokens
-    """
-    if not text or not text.strip():
-        return 0
-    return len(text.strip().split())
-
-
-def batch_count_tokens(texts):
-    """
-    Count tokens for a batch of texts using simple whitespace splitting.
-    Args:
-        texts (list of str): List of input strings.
-    Returns:
-        list of int: Token counts for each text.
-    """
-    return [count_tokens(t) for t in texts]
-
-
 def batch_strip(texts):
     """
     Remove leading/trailing whitespace from each text in a batch.
@@ -141,6 +117,30 @@ def batch_is_empty(texts):
         [True, True, False, True]
     """
     return [not (t and str(t).strip()) for t in texts]
+
+
+def count_tokens(text):
+    """
+    Count the number of tokens in a text string using whitespace splitting.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of tokens
+    """
+    if not text or not text.strip():
+        return 0
+    return len(text.strip().split())
+
+
+def batch_count_tokens(texts):
+    """
+    Count tokens for a batch of texts using simple whitespace splitting.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Token counts for each text.
+    """
+    return [count_tokens(t) for t in texts]
 
 
 def count_words(text):
@@ -174,9 +174,49 @@ def count_sentences(text):
     """
     Count the number of sentences in a text string.
     A sentence is defined as ending with '.', '!', or '?'.
-    Handles 
-... [truncated]
+    Handles edge case where text lacks terminal punctuation by counting trailing content as one sentence.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of sentences
+    """
+    import re
+    if not text or not text.strip():
+        return 0
+    sentences = re.findall(r'[^.!?]+[.!?]', text)
+    remainder = text.strip()
+    if sentences:
+        matched_len = sum(len(s) for s in sentences)
+        leftover = remainder[matched_len:]
+        if leftover and leftover.strip():
+            return len(sentences) + 1
+        else:
+            return len(sentences)
+    else:
+        return 1 if remainder else 0
 
+
+def batch_count_sentences(texts):
+    """
+    Count sentences for a batch of texts.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Sentence counts for each text.
+    Example:
+        >>> batch_count_sentences(["Hello world. One more!", "No punctuation here", ""])
+        [2, 1, 0]
+    """
+    return [count_sentences(t) for t in texts]
+
+
+def count_characters(text):
+    """
+    Count the number of characters in a text string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of characters
     Example:
         >>> count_characters("hello")
         5
