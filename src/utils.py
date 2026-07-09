@@ -174,49 +174,9 @@ def count_sentences(text):
     """
     Count the number of sentences in a text string.
     A sentence is defined as ending with '.', '!', or '?'.
-    Handles edge case where text lacks terminal punctuation by counting trailing content as one sentence.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of sentences
-    """
-    import re
-    if not text or not text.strip():
-        return 0
-    sentences = re.findall(r'[^.!?]+[.!?]', text)
-    remainder = text.strip()
-    if sentences:
-        matched_len = sum(len(s) for s in sentences)
-        leftover = remainder[matched_len:]
-        if leftover and leftover.strip():
-            return len(sentences) + 1
-        else:
-            return len(sentences)
-    else:
-        return 1 if remainder else 0
+    Handles 
+... [truncated]
 
-
-def batch_count_sentences(texts):
-    """
-    Count sentences for a batch of texts using basic punctuation rules.
-    Args:
-        texts (list of str): List of input strings.
-    Returns:
-        list of int: Sentence counts for each text.
-    Example:
-        >>> batch_count_sentences(["Hi! How are you?", "No punctuation here", " "])
-        [2, 1, 0]
-    """
-    return [count_sentences(t) for t in texts]
-
-
-def count_characters(text):
-    """
-    Count the number of characters in a text string.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of characters
     Example:
         >>> count_characters("hello")
         5
