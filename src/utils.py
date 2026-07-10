@@ -13,6 +13,7 @@ Provides:
 - batch_count_words: batch word counting utility
 - batch_count_sentences: batch sentence counting utility
 - batch_count_characters: batch character counting utility
+- batch_count_paragraphs: batch paragraph counting utility
 
 Batch utilities:
 - All batch_* functions operate on lists and return lists, for easy mapping in chunking/retrieval pipelines.
@@ -22,6 +23,7 @@ Batch utilities:
 - batch_count_words: maps count_words
 - batch_count_sentences: maps count_sentences
 - batch_count_characters: maps count_characters
+- batch_count_paragraphs: maps count_paragraphs
 - batch_strip: removes whitespace from each string
 - batch_is_empty: checks if each string in batch is empty or whitespace
 
@@ -198,3 +200,35 @@ def batch_count_characters(texts):
         [3, 11, 1, 0]
     """
     return [count_characters(t) for t in texts]
+
+
+def count_paragraphs(text):
+    """
+    Count the number of paragraphs in a text string.
+    A paragraph is defined as a block of text separated by one or more blank lines.
+    Args:
+        text (str): Input string.
+    Returns:
+        int: Number of paragraphs.
+    Example:
+        >>> count_paragraphs("Para 1\n\nPara 2\n\n\nPara 3")
+        3
+    """
+    if not text or not str(text).strip():
+        return 0
+    paragraphs = [p for p in str(text).split('\n\n') if p.strip()]
+    return len(paragraphs)
+
+
+def batch_count_paragraphs(texts):
+    """
+    Count paragraphs for a batch of texts.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Paragraph counts for each text.
+    Example:
+        >>> batch_count_paragraphs(["Para 1\n\nPara 2", "One paragraph", "\n\n\n", ""])
+        [2, 1, 0, 0]
+    """
+    return [count_paragraphs(t) if t is not None else 0 for t in texts]
