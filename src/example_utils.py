@@ -1,4 +1,4 @@
-from src.utils import flatten, normalize_text, count_tokens, batch_count_tokens, batch_strip
+from src.utils import flatten, normalize_text, count_tokens, batch_count_tokens, batch_strip, batch_is_empty
 
 if __name__ == "__main__":
     # Test flatten
@@ -25,3 +25,8 @@ if __name__ == "__main__":
     batch_texts = ["  leading", "trailing  ", " both ", "no_whitespace", "\t tabbed\n"]
     stripped = batch_strip(batch_texts)
     print(f"batch_strip({batch_texts}) -> {stripped}")
+
+    # Test batch_is_empty
+    empty_batch = ["", "   ", "not empty", None, "\n"]
+    is_empty = batch_is_empty(empty_batch)
+    print(f"batch_is_empty({empty_batch}) -> {is_empty}")
