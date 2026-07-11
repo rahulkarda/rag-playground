@@ -176,3 +176,43 @@ def batch_count_tokens(texts: List[str]) -> List[int]:
         List[int]: Token counts for each text.
     """
     return [count_tokens(t) for t in texts]
+
+
+def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
+    """
+    Summarize statistics for a list of chunks.
+    Returns dict with keys:
+        - num_chunks: number of chunks
+        - avg_chunk_size_chars: average chunk length (characters)
+        - min_chunk_size_chars: minimum chunk length
+        - max_chunk_size_chars: maximum chunk length
+        - avg_chunk_size_words: average chunk word count
+        - min_chunk_size_words: minimum chunk word count
+        - max_chunk_size_words: maximum chunk word count
+
+    Args:
+        chunks (List[Chunk]): List of chunk objects
+    Returns:
+        Dict[str, float]: Statistics about the chunk sizes
+    """
+    if not chunks:
+        return {
+            'num_chunks': 0,
+            'avg_chunk_size_chars': 0.0,
+            'min_chunk_size_chars': 0.0,
+            'max_chunk_size_chars': 0.0,
+            'avg_chunk_size_words': 0.0,
+            'min_chunk_size_words': 0.0,
+            'max_chunk_size_words': 0.0,
+        }
+    sizes_chars = [len(chunk.text) for chunk in chunks]
+    sizes_words = [count_words(chunk.text) for chunk in chunks]
+    return {
+        'num_chunks': len(chunks),
+        'avg_chunk_size_chars': sum(sizes_chars) / len(sizes_chars),
+        'min_chunk_size_chars': min(sizes_chars),
+        'max_chunk_size_chars': max(sizes_chars),
+        'avg_chunk_size_words': sum(sizes_words) / len(sizes_words),
+        'min_chunk_size_words': min(sizes_words),
+        'max_chunk_size_words': max(sizes_words),
+    }
