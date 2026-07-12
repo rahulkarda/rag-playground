@@ -26,7 +26,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Streaming output
 
 ## Phase 5: evaluation
-- [ ] Answer-relevance scorer
+- [x] Answer-relevance scorer
 - [ ] Faithfulness scorer
 - [ ] Eval CLI that takes a question file + ground-truth contexts
 - [ ] Notebook with results
