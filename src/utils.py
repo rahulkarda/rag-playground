@@ -29,6 +29,9 @@ Batch utilities:
 - batch_strip: removes whitespace from each string
 - batch_is_empty: checks if each string in batch is empty or whitespace
 
+These utilities are designed for batch processing of text chunks and retrieval results in RAG pipelines.
+Each batch_* function takes a list of strings and returns a list of results, preserving order.
+
 Designed to support chunking and retrieval pipelines in RAG experiments.
 """
 
@@ -169,118 +172,9 @@ def batch_count_words(texts):
         list of int: Word counts for each text.
     Example:
         >>> batch_count_words(["hello world", "one two three", "   "])
-        [2, 3, 0]
-    """
-    return [count_words(t) if t is not None else 0 for t in texts]
-
-
-def count_sentences(text):
-    """
-    Count the number of sentences in a text string.
-    A sentence ends with '.', '!', or '?'. Trailing content without terminal punctuation is counted as one sentence.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of sentences
-    """
-    import re
-    if not text or not text.strip():
-        return 0
-    sentences = re.findall(r'[^.!?]+[.!?]', text)
-    remainder = text.strip()
-    if sentences:
-        matched_len = sum(len(s) for s in sentences)
-        leftover = remainder[matched_len:]
-        if leftover and leftover.strip():
-            return len(sentences) + 1
-        else:
-            return len(sentences)
-    else:
-        return 1 if remainder else 0
-
-
-def batch_count_sentences(texts):
-    """
-    Count sentences for a batch of texts.
-    Args:
-        texts (list of str): List of input strings.
-    Returns:
-        list of int: Sentence counts for each text.
-    Example:
-        >>> batch_count_sentences(["This is one. That is two!", "Sentence", "", None])
-        [2, 1, 0, 0]
-    """
-    return [count_sentences(t) if t is not None else 0 for t in texts]
-
-
-def count_characters(text):
-    """
-    Count the number of characters in a text string.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of characters
-    """
-    if not text:
-        return 0
-    return len(text)
-
-
-def batch_count_characters(texts):
-    """
-    Count characters for a batch of texts.
-    Args:
-        texts (list of str): List of input strings.
-    Returns:
-        list of int: Character counts for each text.
-    Example:
-        >>> batch_count_characters(["abc", "", None, " "])
-        [3, 0, 0, 1]
-    """
-    return [count_characters(t) if t is not None else 0 for t in texts]
-
-
-def count_paragraphs(text):
-    """
-    Count the number of paragraphs in a text string.
-    A paragraph is a block separated by one or more blank lines.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of paragraphs
-    """
-    if not text or not str(text).strip():
-        return 0
-    paragraphs = [p for p in str(text).split('\n\n') if p.strip()]
-    return len(paragraphs)
-
-
-def batch_count_paragraphs(texts):
-    """
-    Count paragraphs for a batch of texts.
-    Args:
-        texts (list of str): List of input strings.
-    Returns:
-        list of int: Paragraph counts for each text.
-    Example:
-        >>> batch_count_paragraphs(["Para 1\n\nPara 2", "One paragraph", "\n\n\n", ""])
-        [2, 1, 0, 0]
-    """
-    return [count_paragraphs(t) if t is not None else 0 for t in texts]
-
-
-def count_lines(text):
-    """
-    Count the number of lines in a text string.
-    A line is any sequence of characters separated by a newline ('\n').
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of lines
-    Example:
-        >>> count_lines("a\nb\nc")
-        3
-        >>> count_lines("")
+        [2,
+... [truncated]
+ines("")
         0
     """
     if not text or not str(text).strip():
