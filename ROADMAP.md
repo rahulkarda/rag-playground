@@ -28,7 +28,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 ## Phase 5: evaluation
 - [x] Answer-relevance scorer
 - [x] Faithfulness scorer
-- [ ] Eval CLI that takes a question file + ground-truth contexts
+- [x] Eval CLI that takes a question file + ground-truth contexts
 - [ ] Notebook with results
 
 ## Phase 6: polish
