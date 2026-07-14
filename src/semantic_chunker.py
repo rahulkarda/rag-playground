@@ -1,119 +1,121 @@
 """
-Semantic chunker: splits text into chunks where adjacent segments are semantically similar,
-using embedding similarity threshold.
+Semantic chunking utilities for retrieval-augmented generation (RAG).
 
-How it works:
-- The text is split into segments (default: sentences).
-- Embeddings are computed for each segment via embed_fn.
-- Adjacent segments are greedily merged if their cosine similarity exceeds the threshold,
-  and the merged chunk does not exceed max_size.
-- If a chunk is below min_size, it tries to merge further, even if similarity is low.
-- Chunk boundaries are thus determined by semantic similarity, not just syntax.
+This module implements chunking based on embedding similarity, allowing for splitting documents into semantically coherent chunks.
 
-Limitations:
-- Boundaries depend on the initial splitter (default: sentences).
-- Quality depends on embed_fn (embedding model).
-- Does not guarantee all chunks are within [min_size, max_size] but tries to enforce bounds.
+Features:
+- Semantic chunker: splits text where embedding similarity drops, producing chunks aligned with semantic boundaries.
+- Comparison utilities: compare fixed-size, recursive, and semantic chunking strategies.
+- Useful for experiments in RAG where chunk granularity and semantic coherence affect retrieval and answer quality.
 
-Example usage:
+Typical usage:
+    from src.semantic_chunker import semantic_chunker, compare_chunkers
+    chunks = semantic_chunker(text, embed_fn)
+    # embed_fn: function that maps text -> embedding vector (e.g. from src.embedder)
 
-    from src.semantic_chunker import semantic_chunks
-    import numpy as np
-    # Dummy embed function (replace with real model)
-    def embed_fn(text):
-        np.random.seed(hash(text) % 2**32)
-        return np.random.rand(384)
-    text = "Sentence one. Sentence two. Sentence three."
-    chunks = list(semantic_chunks(text, embed_fn=embed_fn))
-    for chunk in chunks:
-        print(f"[{chunk.start}:{chunk.end}] {chunk.text}")
-
+See also:
+    - src.chunker.py: basic chunking and statistics
+    - src.recursive_chunker.py: recursive chunking respecting structure
+    - src.embedder.py: embedding models
 """
-from dataclasses import dataclass
-from typing import Iterator, List, Optional
+
 import numpy as np
-
-@dataclass
-class Chunk:
-    text: str
-    start: int
-    end: int
+from typing import List, Callable, Optional
+from src.chunker import Chunk
 
 
-def semantic_chunks(
+def semantic_chunker(
     text: str,
-    embed_fn,
-    similarity_threshold: float = 0.68,
-    min_size: int = 64,
-    max_size: int = 512,
-    split_fn: Optional = None
-) -> Iterator[Chunk]:
+    embed_fn: Callable[[str], np.ndarray],
+    min_chunk_size: int = 128,
+    max_chunk_size: int = 2048,
+    similarity_threshold: float = 0.85,
+    sliding_window: int = 32
+) -> List[Chunk]:
     """
-    Split text into semantic chunks using embedding similarity.
-    - embed_fn: function(text: str) -> np.ndarray (embedding)
-    - similarity_threshold: cosine similarity threshold for merging
-    - min_size, max_size: chunk size bounds (characters)
-    - split_fn: custom splitter (defaults to sentences)
+    Split text into semantically coherent chunks using embedding similarity.
+    Chunks are created where similarity between adjacent windows drops below a threshold.
+
+    Args:
+        text (str): Input document.
+        embed_fn (Callable): Function mapping text -> embedding vector.
+        min_chunk_size (int): Minimum chunk size (characters).
+        max_chunk_size (int): Maximum chunk size (characters).
+        similarity_threshold (float): Cosine similarity threshold to split.
+        sliding_window (int): Window size (characters) for embedding comparison.
+
+    Returns:
+        List[Chunk]: List of semantic chunks.
     """
-    if split_fn is None:
-        split_fn = _split_sentences
-    segments = split_fn(text)
-    starts, ends = _segment_indices(text, segments)
-    embeddings = [embed_fn(seg) for seg in segments]
-    i = 0
-    while i < len(segments):
-        curr_text = segments[i]
-        curr_start = starts[i]
-        curr_end = ends[i]
-        curr_emb = embeddings[i]
-        j = i + 1
-        while j < len(segments):
-            next_emb = embeddings[j]
-            sim = _cosine(curr_emb, next_emb)
-            next_len = len(curr_text) + len(segments[j])
-            if sim >= similarity_threshold and next_len <= max_size:
-                # Merge
-                curr_text += segments[j]
-                curr_end = ends[j]
-                # Update embedding (average)
-                curr_emb = (curr_emb + next_emb) / 2
-                j += 1
-            else:
-                break
-        # If chunk too small, try to merge forcibly (unless at end)
-        if (curr_end - curr_start) < min_size and j < len(segments):
-            curr_text += segments[j]
-            curr_end = ends[j]
-            curr_emb = (curr_emb + embeddings[j]) / 2
-            j += 1
-        yield Chunk(text=curr_text, start=curr_start, end=curr_end)
-        i = j
+    text_len = len(text)
+    if text_len <= min_chunk_size:
+        return [Chunk(text=text, start=0, end=text_len)]
+
+    # Generate windows
+    window_starts = list(range(0, text_len - sliding_window + 1, sliding_window))
+    window_embs = [embed_fn(text[s:s+sliding_window]) for s in window_starts]
+
+    # Compute similarity between adjacent windows
+    sims = []
+    for i in range(len(window_embs) - 1):
+        a = window_embs[i]
+        b = window_embs[i+1]
+        sim = float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-8))
+        sims.append(sim)
+
+    # Identify split points
+    splits = [0]
+    for i, sim in enumerate(sims):
+        if sim < similarity_threshold:
+            split_pos = window_starts[i+1]
+            if split_pos - splits[-1] >= min_chunk_size:
+                splits.append(split_pos)
+    splits.append(text_len)
+
+    # Merge chunks exceeding max_chunk_size
+    chunks = []
+    for i in range(len(splits)-1):
+        start = splits[i]
+        end = splits[i+1]
+        chunk_text = text[start:end]
+        if len(chunk_text) > max_chunk_size:
+            # Split further
+            for j in range(start, end, max_chunk_size):
+                sub_end = min(j + max_chunk_size, end)
+                chunks.append(Chunk(text=text[j:sub_end], start=j, end=sub_end))
+        else:
+            chunks.append(Chunk(text=chunk_text, start=start, end=end))
+    return chunks
 
 
-def _split_sentences(text: str) -> List[str]:
-    import re
-    # Simple sentence splitter
-    sentences = re.findall(r'[^.!?]+[.!?]', text)
-    if not sentences:
-        return [text]
-    return sentences
-
-def _segment_indices(text: str, segments: List[str]) -> (List[int], List[int]):
+def compare_chunkers(
+    text: str,
+    embed_fn: Callable[[str], np.ndarray],
+    fixed_size: int = 512,
+    recursive_fn: Optional[Callable[[str], List[Chunk]]] = None
+) -> dict:
     """
-    Returns lists of start and end indices for each segment in original text.
-    """
-    idx = 0
-    starts = []
-    ends = []
-    for seg in segments:
-        start = text.find(seg, idx)
-        end = start + len(seg)
-        starts.append(start)
-        ends.append(end)
-        idx = end
-    return starts, ends
+    Compare fixed-size, semantic, and recursive chunking on a single document.
 
-def _cosine(a, b):
-    a = np.asarray(a)
-    b = np.asarray(b)
-    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-8))
+    Args:
+        text (str): Input document
+        embed_fn (Callable): Embedding function
+        fixed_size (int): Fixed chunk size for baseline
+        recursive_fn (Optional[Callable]): Recursive chunker function
+
+    Returns:
+        dict: Chunk stats for each method
+    """
+    from src.chunker import fixed_size_chunks, chunk_stats
+    results = {}
+    # Fixed-size
+    fixed_chunks = list(fixed_size_chunks(text, size=fixed_size, overlap=0))
+    results['fixed'] = chunk_stats(fixed_chunks)
+    # Semantic
+    semantic_chunks = semantic_chunker(text, embed_fn, min_chunk_size=128, max_chunk_size=fixed_size, similarity_threshold=0.85)
+    results['semantic'] = chunk_stats(semantic_chunks)
+    # Recursive (if provided)
+    if recursive_fn:
+        rec_chunks = recursive_fn(text)
+        results['recursive'] = chunk_stats(rec_chunks)
+    return results
