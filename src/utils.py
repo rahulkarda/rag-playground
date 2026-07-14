@@ -172,16 +172,13 @@ def batch_count_words(texts):
         texts (list of str): List of input strings.
     Returns:
         list of int: Word counts for each text.
-    Example:
-        >>> batch_count_words(["hello world", "one two three", "   "])
-        [2, 3, 0]
     """
     return [count_words(t) if t is not None else 0 for t in texts]
 
 
 def count_sentences(text):
     """
-    Count the number of sentences in a text string using simple punctuation.
+    Count the number of sentences in a text string.
     Args:
         text (str): Input string
     Returns:
@@ -248,7 +245,7 @@ def count_paragraphs(text):
     """
     if not text or not text.strip():
         return 0
-    paragraphs = [p for p in str(text).split('\n\n') if p.strip()]
+    paragraphs = [p for p in text.split('\n\n') if p.strip()]
     return len(paragraphs)
 
 
@@ -270,15 +267,10 @@ def count_lines(text):
         text (str): Input string
     Returns:
         int: Number of lines
-    Example:
-        >>> count_lines("a\nb\nc")
-        3
-        >>> count_lines("")
-        0
     """
-    if not text or not str(text).strip():
+    if not text:
         return 0
-    return len(str(text).splitlines())
+    return len(text.splitlines())
 
 
 def batch_count_lines(texts):
@@ -288,23 +280,17 @@ def batch_count_lines(texts):
         texts (list of str): List of input strings.
     Returns:
         list of int: Line counts for each text.
-    Example:
-        >>> batch_count_lines(["a\nb\nc", "one line", "", None])
-        [3, 1, 0, 0]
     """
     return [count_lines(t) if t is not None else 0 for t in texts]
 
 
 def count_uppercase(text):
     """
-    Count the number of uppercase alphabetic characters in a text string.
+    Count uppercase alphabetic characters in a text string.
     Args:
         text (str): Input string
     Returns:
-        int: Number of uppercase characters
-    Example:
-        >>> count_uppercase("Hello WORLD!")
-        6
+        int: Number of uppercase alphabetic characters
     """
     if not text:
         return 0
