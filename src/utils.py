@@ -60,7 +60,7 @@ def flatten(lst):
 
 def batch_flatten(lists):
     """
-    Flatten each element in a batch (one level if it's a list, else unchanged).
+    Apply flatten to each element in a batch (one level if it's a list).
     Args:
         lists (Iterable): Iterable of lists or elements
     Returns:
@@ -167,11 +167,14 @@ def count_words(text):
 
 def batch_count_words(texts):
     """
-    Count words for a batch of texts using simple whitespace splitting.
+    Count the number of words in each text in a batch.
     Args:
         texts (list of str): List of input strings.
     Returns:
         list of int: Word counts for each text.
+    Example:
+        >>> batch_count_words(["hello world", "one", " "])
+        [2, 1, 0]
     """
     return [count_words(t) if t is not None else 0 for t in texts]
 
@@ -179,8 +182,10 @@ def batch_count_words(texts):
 def count_sentences(text):
     """
     Count the number of sentences in a text string.
-    A sentence is defined as ending with '.', '!', or '?'.
-    Handles edge case where text lacks terminal punctuation by counting trailing content as one sentence.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of sentences
     """
     import re
     if not text or not text.strip():
@@ -200,11 +205,14 @@ def count_sentences(text):
 
 def batch_count_sentences(texts):
     """
-    Count sentences for a batch of texts.
+    Count the number of sentences in each text in a batch.
     Args:
         texts (list of str): List of input strings.
     Returns:
         list of int: Sentence counts for each text.
+    Example:
+        >>> batch_count_sentences(["One sentence.", "Two! Sentences?", " "])
+        [1, 2, 0]
     """
     return [count_sentences(t) if t is not None else 0 for t in texts]
 
@@ -212,19 +220,24 @@ def batch_count_sentences(texts):
 def count_characters(text):
     """
     Count the number of characters in a text string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of characters
     """
-    if not text:
-        return 0
-    return len(text)
+    return len(text) if text else 0
 
 
 def batch_count_characters(texts):
     """
-    Count characters for a batch of texts.
+    Count the number of characters in each text in a batch.
     Args:
         texts (list of str): List of input strings.
     Returns:
         list of int: Character counts for each text.
+    Example:
+        >>> batch_count_characters(["abc", "", None])
+        [3, 0, 0]
     """
     return [count_characters(t) if t is not None else 0 for t in texts]
 
@@ -232,7 +245,10 @@ def batch_count_characters(texts):
 def count_paragraphs(text):
     """
     Count the number of paragraphs in a text string.
-    A paragraph is defined as a block of text separated by one or more blank lines.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of paragraphs
     """
     if not text:
         return 0
@@ -242,11 +258,14 @@ def count_paragraphs(text):
 
 def batch_count_paragraphs(texts):
     """
-    Count paragraphs for a batch of texts.
+    Count the number of paragraphs in each text in a batch.
     Args:
         texts (list of str): List of input strings.
     Returns:
         list of int: Paragraph counts for each text.
+    Example:
+        >>> batch_count_paragraphs(["para1\n\npara2", "", None])
+        [2, 0, 0]
     """
     return [count_paragraphs(t) if t is not None else 0 for t in texts]
 
@@ -254,7 +273,10 @@ def batch_count_paragraphs(texts):
 def count_lines(text):
     """
     Count the number of lines in a text string.
-    A line is any sequence of characters separated by a newline ('\n').
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of lines
     """
     if not text:
         return 0
@@ -263,22 +285,25 @@ def count_lines(text):
 
 def batch_count_lines(texts):
     """
-    Count lines for a batch of texts.
+    Count the number of lines in each text in a batch.
     Args:
         texts (list of str): List of input strings.
     Returns:
         list of int: Line counts for each text.
+    Example:
+        >>> batch_count_lines(["a\nb", "", None])
+        [2, 0, 0]
     """
     return [count_lines(t) if t is not None else 0 for t in texts]
 
 
 def count_uppercase(text):
     """
-    Count uppercase alphabetic characters in a text string.
+    Count the number of uppercase alphabetic characters in a string.
     Args:
-        text (str): Input string.
+        text (str): Input string
     Returns:
-        int: Number of uppercase characters.
+        int: Number of uppercase letters
     """
     if not text:
         return 0
