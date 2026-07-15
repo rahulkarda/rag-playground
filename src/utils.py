@@ -179,10 +179,8 @@ def batch_count_words(texts):
 def count_sentences(text):
     """
     Count the number of sentences in a text string.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of sentences
+    A sentence is defined as ending with '.', '!', or '?'.
+    Handles edge case where text lacks terminal punctuation by counting trailing content as one sentence.
     """
     import re
     if not text or not text.strip():
@@ -214,10 +212,6 @@ def batch_count_sentences(texts):
 def count_characters(text):
     """
     Count the number of characters in a text string.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of characters
     """
     if not text:
         return 0
@@ -238,12 +232,9 @@ def batch_count_characters(texts):
 def count_paragraphs(text):
     """
     Count the number of paragraphs in a text string.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of paragraphs
+    A paragraph is defined as a block of text separated by one or more blank lines.
     """
-    if not text or not text.strip():
+    if not text:
         return 0
     paragraphs = [p for p in text.split('\n\n') if p.strip()]
     return len(paragraphs)
@@ -263,10 +254,7 @@ def batch_count_paragraphs(texts):
 def count_lines(text):
     """
     Count the number of lines in a text string.
-    Args:
-        text (str): Input string
-    Returns:
-        int: Number of lines
+    A line is any sequence of characters separated by a newline ('\n').
     """
     if not text:
         return 0
@@ -288,9 +276,9 @@ def count_uppercase(text):
     """
     Count uppercase alphabetic characters in a text string.
     Args:
-        text (str): Input string
+        text (str): Input string.
     Returns:
-        int: Number of uppercase alphabetic characters
+        int: Number of uppercase characters.
     """
     if not text:
         return 0
