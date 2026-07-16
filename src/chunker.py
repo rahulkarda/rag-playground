@@ -30,14 +30,14 @@ class Chunk:
     end: int
 
 
-def fixed_size_chunks(text: str, size: int = 2048, overlap: int = 256) -> Iterator[Chunk]:
+def fixed_size_chunks(text: str, size: int = 1024, overlap: int = 128) -> Iterator[Chunk]:
     """
     Split text into fixed-size chunks with optional overlap.
 
     Args:
         text (str): Input text to chunk.
-        size (int, optional): Maximum length of each chunk (in characters). Default is 2048.
-        overlap (int, optional): Number of characters to overlap between consecutive chunks. Default is 256.
+        size (int, optional): Maximum length of each chunk (in characters). Default is 1024.
+        overlap (int, optional): Number of characters to overlap between consecutive chunks. Default is 128.
 
     Yields:
         Chunk: A dataclass containing chunk text and its start/end character indices.
@@ -158,7 +158,14 @@ def count_tokens(text: str) -> int:
 
 def normalize_text(text: str) -> str:
     """
-    Normalize text for chunking/retrieval: lowercase, strip, collapse whitespace.
+    Normalize text for chunking/retrieval:
+    - Lowercase
+    - Strip leading/trailing whitespace
+    - Collapse runs of whitespace to single spaces
+    Args:
+        text (str): Input string
+    Returns:
+        str: Normalized string
     """
     import re
     text = text.lower()
@@ -167,43 +174,23 @@ def normalize_text(text: str) -> str:
     return text
 
 
-def batch_count_tokens(texts: List[str]) -> List[int]:
-    """
-    Count tokens for a batch of texts using simple whitespace splitting.
-    Args:
-        texts (List[str]): List of input strings.
-    Returns:
-        List[int]: Token counts for each text.
-    """
-    return [count_tokens(t) for t in texts]
-
-
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics for a list of chunks.
-    Returns dict with keys:
-        - num_chunks: number of chunks
-        - avg_chunk_size_chars: average chunk length (characters)
-        - min_chunk_size_chars: minimum chunk length
-        - max_chunk_size_chars: maximum chunk length
-        - avg_chunk_size_words: average chunk word count
-        - min_chunk_size_words: minimum chunk word count
-        - max_chunk_size_words: maximum chunk word count
-
+    Summarize chunk statistics: number, min/max/avg size (chars, words)
     Args:
-        chunks (List[Chunk]): List of chunk objects
+        chunks (List[Chunk]): List of Chunk objects
     Returns:
-        Dict[str, float]: Statistics about the chunk sizes
+        dict: {'num_chunks', 'avg_chunk_size_chars', 'min_chunk_size_chars', ...}
     """
     if not chunks:
         return {
             'num_chunks': 0,
             'avg_chunk_size_chars': 0.0,
-            'min_chunk_size_chars': 0.0,
-            'max_chunk_size_chars': 0.0,
+            'min_chunk_size_chars': 0,
+            'max_chunk_size_chars': 0,
             'avg_chunk_size_words': 0.0,
-            'min_chunk_size_words': 0.0,
-            'max_chunk_size_words': 0.0,
+            'min_chunk_size_words': 0,
+            'max_chunk_size_words': 0,
         }
     sizes_chars = [len(chunk.text) for chunk in chunks]
     sizes_words = [count_words(chunk.text) for chunk in chunks]
