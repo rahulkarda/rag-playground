@@ -162,10 +162,6 @@ def normalize_text(text: str) -> str:
     - Lowercase
     - Strip leading/trailing whitespace
     - Collapse runs of whitespace to single spaces
-    Args:
-        text (str): Input string
-    Returns:
-        str: Normalized string
     """
     import re
     text = text.lower()
@@ -176,11 +172,31 @@ def normalize_text(text: str) -> str:
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize chunk statistics: number, min/max/avg size (chars, words)
+    Summarize statistics for a list of chunks.
+
     Args:
-        chunks (List[Chunk]): List of Chunk objects
+        chunks (List[Chunk]): List of Chunk objects (with .text field).
     Returns:
-        dict: {'num_chunks', 'avg_chunk_size_chars', 'min_chunk_size_chars', ...}
+        dict: Statistics including:
+            - num_chunks: number of chunks
+            - avg_chunk_size_chars: average chunk size in characters
+            - min_chunk_size_chars: minimum chunk size in characters
+            - max_chunk_size_chars: maximum chunk size in characters
+            - avg_chunk_size_words: average chunk size in words
+            - min_chunk_size_words: minimum chunk size in words
+            - max_chunk_size_words: maximum chunk size in words
+    Example:
+        >>> chunks = [Chunk("abc", 0, 3), Chunk("defgh", 3, 8)]
+        >>> chunk_stats(chunks)
+        {
+            'num_chunks': 2,
+            'avg_chunk_size_chars': 4.0,
+            'min_chunk_size_chars': 3,
+            'max_chunk_size_chars': 5,
+            'avg_chunk_size_words': 1.0,
+            'min_chunk_size_words': 1,
+            'max_chunk_size_words': 1
+        }
     """
     if not chunks:
         return {
