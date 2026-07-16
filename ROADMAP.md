@@ -32,7 +32,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Notebook with results
 
 ## Phase 6: polish
-- [ ] CLI entrypoint
+- [x] CLI entrypoint
 - [ ] Config via YAML
 - [ ] Tests
 - [ ] Docs
