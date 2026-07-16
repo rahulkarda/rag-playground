@@ -17,6 +17,7 @@ Provides:
 - batch_count_lines: batch line counting utility
 - batch_count_uppercase: batch uppercase character counting utility
 - batch_count_digits: batch digit counting utility
+- batch_count_punctuation: batch punctuation counting utility
 
 Batch utilities:
 - All batch_* functions operate on lists and return lists, for easy mapping in chunking/retrieval pipelines.
@@ -30,6 +31,7 @@ Batch utilities:
 - batch_count_lines: maps count_lines
 - batch_count_uppercase: maps count_uppercase
 - batch_count_digits: maps count_digits
+- batch_count_punctuation: maps count_punctuation
 - batch_strip: removes whitespace from each string
 - batch_is_empty: checks if each string in batch is empty or whitespace
 
@@ -181,7 +183,10 @@ def batch_count_words(texts):
 def count_sentences(text):
     """
     Count the number of sentences in a text string.
-    A sentence is defined as ending with '.', '!', or '?'.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of sentences
     """
     import re
     if not text or not text.strip():
@@ -220,7 +225,7 @@ def count_characters(text):
     """
     if not text:
         return 0
-    return len(str(text))
+    return len(text)
 
 
 def batch_count_characters(texts):
@@ -242,9 +247,9 @@ def count_paragraphs(text):
     Returns:
         int: Number of paragraphs
     """
-    if not text or not text.strip():
+    if not text:
         return 0
-    paragraphs = [p for p in str(text).split('\n\n') if p.strip()]
+    paragraphs = [p for p in text.split('\n\n') if p.strip()]
     return len(paragraphs)
 
 
@@ -269,7 +274,7 @@ def count_lines(text):
     """
     if not text:
         return 0
-    return len(str(text).splitlines())
+    return len(text.splitlines())
 
 
 def batch_count_lines(texts):
@@ -285,11 +290,11 @@ def batch_count_lines(texts):
 
 def count_uppercase(text):
     """
-    Count uppercase alphabetic characters in a text string.
+    Count the number of uppercase characters in a text string.
     Args:
         text (str): Input string
     Returns:
-        int: Number of uppercase alphabetic characters
+        int: Number of uppercase characters
     """
     if not text:
         return 0
@@ -298,28 +303,25 @@ def count_uppercase(text):
 
 def batch_count_uppercase(texts):
     """
-    Count uppercase alphabetic characters for a batch of texts.
+    Count uppercase characters for a batch of texts.
     Args:
         texts (list of str): List of input strings.
     Returns:
-        list of int: Uppercase counts for each text.
+        list of int: Number of uppercase characters for each text.
     Example:
-        >>> batch_count_uppercase(["Hello", "WORLD!", "no caps"])
-        [1, 5, 0]
+        >>> batch_count_uppercase(["ABC", "abc", "aBcD"])
+        [3, 0, 2]
     """
     return [count_uppercase(t) if t is not None else 0 for t in texts]
 
 
 def count_digits(text):
     """
-    Count digit characters (0-9) in a text string.
+    Count the number of digit characters in a text string.
     Args:
         text (str): Input string
     Returns:
         int: Number of digit characters
-    Example:
-        >>> count_digits("abc123")
-        3
     """
     if not text:
         return 0
@@ -338,3 +340,34 @@ def batch_count_digits(texts):
         [3, 0, 4]
     """
     return [count_digits(t) if t is not None else 0 for t in texts]
+
+
+def count_punctuation(text):
+    """
+    Count the number of punctuation characters in a text string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of punctuation characters
+    Example:
+        >>> count_punctuation("Hello, world! (test)")
+        4
+    """
+    import string
+    if not text:
+        return 0
+    return sum(1 for c in str(text) if c in string.punctuation)
+
+
+def batch_count_punctuation(texts):
+    """
+    Count punctuation characters for a batch of texts.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of punctuation characters for each text.
+    Example:
+        >>> batch_count_punctuation(["Hello!", "No punct", "...!"])
+        [1, 0, 4]
+    """
+    return [count_punctuation(t) if t is not None else 0 for t in texts]
