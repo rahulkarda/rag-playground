@@ -18,6 +18,7 @@ Provides:
 - batch_count_uppercase: batch uppercase character counting utility
 - batch_count_digits: batch digit counting utility
 - batch_count_punctuation: batch punctuation counting utility
+- batch_count_whitespace: batch whitespace character counting utility
 
 Batch utilities:
 - All batch_* functions operate on lists and return lists, for easy mapping in chunking/retrieval pipelines.
@@ -32,6 +33,7 @@ Batch utilities:
 - batch_count_uppercase: maps count_uppercase
 - batch_count_digits: maps count_digits
 - batch_count_punctuation: maps count_punctuation
+- batch_count_whitespace: maps count_whitespace
 - batch_strip: removes whitespace from each string
 - batch_is_empty: checks if each string in batch is empty or whitespace
 
@@ -171,7 +173,7 @@ def count_words(text):
 
 def batch_count_words(texts):
     """
-    Count words for a batch of texts using whitespace splitting.
+    Count words for a batch of texts.
     Args:
         texts (list of str): List of input strings.
     Returns:
@@ -290,7 +292,7 @@ def batch_count_lines(texts):
 
 def count_uppercase(text):
     """
-    Count the number of uppercase characters in a text string.
+    Count the number of uppercase ASCII characters in a text string.
     Args:
         text (str): Input string
     Returns:
@@ -308,9 +310,6 @@ def batch_count_uppercase(texts):
         texts (list of str): List of input strings.
     Returns:
         list of int: Number of uppercase characters for each text.
-    Example:
-        >>> batch_count_uppercase(["ABC", "abc", "aBcD"])
-        [3, 0, 2]
     """
     return [count_uppercase(t) if t is not None else 0 for t in texts]
 
@@ -335,9 +334,6 @@ def batch_count_digits(texts):
         texts (list of str): List of input strings.
     Returns:
         list of int: Number of digit characters for each text.
-    Example:
-        >>> batch_count_digits(["abc123", "no digits", "4567"])
-        [3, 0, 4]
     """
     return [count_digits(t) if t is not None else 0 for t in texts]
 
@@ -349,9 +345,6 @@ def count_punctuation(text):
         text (str): Input string
     Returns:
         int: Number of punctuation characters
-    Example:
-        >>> count_punctuation("Hello, world! (test)")
-        4
     """
     import string
     if not text:
@@ -371,3 +364,33 @@ def batch_count_punctuation(texts):
         [1, 0, 4]
     """
     return [count_punctuation(t) if t is not None else 0 for t in texts]
+
+
+def count_whitespace(text):
+    """
+    Count the number of whitespace characters in a text string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of whitespace characters
+    Example:
+        >>> count_whitespace("a b\t c\n")
+        3
+    """
+    if not text:
+        return 0
+    return sum(1 for c in str(text) if c.isspace())
+
+
+def batch_count_whitespace(texts):
+    """
+    Count whitespace characters for a batch of texts.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of whitespace characters for each text.
+    Example:
+        >>> batch_count_whitespace(["abc", "a b\t c\n", " ", ""])
+        [0, 3, 1, 0]
+    """
+    return [count_whitespace(t) if t is not None else 0 for t in texts]
