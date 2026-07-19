@@ -34,5 +34,5 @@ Working through these in roughly this order. Items get crossed off as they land.
 ## Phase 6: polish
 - [x] CLI entrypoint
 - [x] Config via YAML
-- [ ] Tests
+- [x] Tests
 - [ ] Docs
