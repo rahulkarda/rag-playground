@@ -47,7 +47,7 @@ class SentenceTransformerEmbedder:
     
     - Use embed(text) for a single string, returns a numpy array of shape (dim,)
     - Use embed_batch(texts) for a list of strings, returns array of shape (len(texts), dim)
-    - Use embed_batch_with_progress(texts, batch_size=64, progress_fn=None) to embed large corpora with progress reporting
+    - Use embed_batch_with_progress(texts, batch_size=128, progress_fn=None) to embed large corpora with progress reporting
     
     Model selection: pass model_name to constructor (e.g. "all-MiniLM-L6-v2").
     Batch encoding is recommended for efficiency on large corpora.
@@ -72,14 +72,14 @@ class SentenceTransformerEmbedder:
     def embed_batch_with_progress(
         self,
         texts: List[str],
-        batch_size: int = 64,
+        batch_size: int = 128,
         progress_fn: Optional[Callable[[int, int], None]] = None
     ) -> np.ndarray:
         """
         Embed a batch of texts in batches, reporting progress.
         Args:
             texts: List of input strings
-            batch_size: Number of texts per batch (default: 64)
+            batch_size: Number of texts per batch (default: 128)
             progress_fn: Optional function(current, total) called after each batch
         Returns:
             Numpy array of shape (len(texts), dim)
