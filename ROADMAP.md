@@ -33,6 +33,6 @@ Working through these in roughly this order. Items get crossed off as they land.
 
 ## Phase 6: polish
 - [x] CLI entrypoint
-- [ ] Config via YAML
+- [x] Config via YAML
 - [ ] Tests
 - [ ] Docs
