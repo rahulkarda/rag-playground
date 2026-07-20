@@ -1,5 +1,5 @@
 import pytest
-from src.utils import flatten, normalize_text, batch_is_empty
+from src.utils import flatten, normalize_text, batch_is_empty, batch_count_substring, batch_count_lowercase
 
 
 def test_flatten_basic():
@@ -22,3 +22,14 @@ def test_batch_is_empty():
     batch = ["", "   ", "hello", None, "\n"]
     expected = [True, True, False, True, True]
     assert batch_is_empty(batch) == expected
+
+def test_batch_count_substring():
+    texts = ["banana", "bandana", "an", "", None]
+    result = batch_count_substring(texts, "an")
+    assert result == [2, 2, 1, 0, 0]
+
+
+def test_batch_count_lowercase():
+    texts = ["abcDEF", "ALLUP", "mixedCase", "", None]
+    expected = [3, 0, 5, 0, 0]
+    assert batch_count_lowercase(texts) == expected
