@@ -155,26 +155,82 @@ def count_lines(text: str) -> int:
 def count_tokens(text: str) -> int:
     """
     Count the number of tokens in a text string using whitespace splitting.
-    This is a rough proxy for true model tokens.
+    This is a rough proxy for true tokenization (not language-model specific).
     """
-    return len(text.strip().split()) if text.strip() else 0
+    if not text:
+        return 0
+    return len(text.strip().split())
+
+
+def batch_count_tokens(texts: List[str]) -> List[int]:
+    """
+    Count tokens for each string in a batch using whitespace splitting.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: token counts per string.
+    """
+    return [count_tokens(t) if t is not None else 0 for t in texts]
+
+
+def count_tiktoken_tokens(text: str, encoding_name: str = "cl100k_base") -> int:
+    """
+    Count tokens in a string using tiktoken encoder (OpenAI tokenizer).
+    Args:
+        text (str): Input string
+        encoding_name (str): tiktoken encoding, default "cl100k_base"
+    Returns:
+        int: number of tokens
+    """
+    import tiktoken
+    enc = tiktoken.get_encoding(encoding_name)
+    return len(enc.encode(text))
+
+
+def batch_count_tiktoken_tokens(texts: List[str], encoding_name: str = "cl100k_base") -> List[int]:
+    """
+    Count tiktoken tokens for each string in a batch.
+    Args:
+        texts (list of str): List of input strings.
+        encoding_name (str): tiktoken encoding
+    Returns:
+        list of int: token counts per string
+    """
+    import tiktoken
+    enc = tiktoken.get_encoding(encoding_name)
+    return [len(enc.encode(t)) if t is not None else 0 for t in texts]
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics about a list of chunks.
+    Summarize statistics for a list of Chunk objects.
+
     Args:
-        chunks (List[Chunk]): List of chunk objects.
+        chunks (List[Chunk]): List of Chunk objects (each with .text, .start, .end).
     Returns:
-        Dict[str, float]: stats summary.
+        Dict[str, float]: Dictionary of statistics for the chunk list.
+            - num_chunks: number of chunks (int)
+            - avg_chunk_size_chars: average chunk size in characters (float)
+            - min_chunk_size_chars: minimum chunk size in characters (int)
+            - max_chunk_size_chars: maximum chunk size in characters (int)
+            - avg_chunk_size_words: average chunk size in words (float)
+            - min_chunk_size_words: minimum chunk size in words (int)
+            - max_chunk_size_words: maximum chunk size in words (int)
+
+    Example:
+        >>> chunks = [Chunk(text='abc', start=0, end=3), Chunk(text='defg', start=3, end=7)]
+        >>> stats = chunk_stats(chunks)
+        >>> print(stats)
+        {'num_chunks': 2, 'avg_chunk_size_chars': 3.5, 'min_chunk_size_chars': 3, 'max_chunk_size_chars': 4,
+         'avg_chunk_size_words': 1.0, 'min_chunk_size_words': 1, 'max_chunk_size_words': 1}
     """
     if not chunks:
         return {
             'num_chunks': 0,
-            'avg_chunk_size_chars': 0,
+            'avg_chunk_size_chars': 0.0,
             'min_chunk_size_chars': 0,
             'max_chunk_size_chars': 0,
-            'avg_chunk_size_words': 0,
+            'avg_chunk_size_words': 0.0,
             'min_chunk_size_words': 0,
             'max_chunk_size_words': 0,
         }
