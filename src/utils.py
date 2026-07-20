@@ -31,4 +31,34 @@ def batch_count_substring(texts, substring):
     """
     return [count_substring(t, substring) if t is not None else 0 for t in texts]
 
+
+def count_lowercase(text):
+    """
+    Count the number of lowercase letters in a string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of lowercase letters
+    Example:
+        >>> count_lowercase('abcDEF')
+        3
+    """
+    if not text:
+        return 0
+    return sum(1 for c in text if c.islower())
+
+
+def batch_count_lowercase(texts):
+    """
+    Count the number of lowercase letters in each string in a batch.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of lowercase letters for each string.
+    Example:
+        >>> batch_count_lowercase(['abcDEF', 'ALLUP', 'mixedCase'])
+        [3, 0, 5]
+    """
+    return [count_lowercase(t) if t is not None else 0 for t in texts]
+
 ...
