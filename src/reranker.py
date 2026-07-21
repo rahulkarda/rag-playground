@@ -7,7 +7,7 @@ class BM25Reranker:
     scores each candidate using BM25, and returns top-k reranked candidates.
     This is useful as a reranking stage after initial retrieval (dense, hybrid, etc).
     """
-    def __init__(self, k: int = 5):
+    def __init__(self, k: int = 10):
         self.k = k
 
     def _tokenize(self, text: str) -> List[str]:
