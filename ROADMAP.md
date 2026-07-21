@@ -35,4 +35,4 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] CLI entrypoint
 - [x] Config via YAML
 - [x] Tests
-- [ ] Docs
+- [x] Docs
