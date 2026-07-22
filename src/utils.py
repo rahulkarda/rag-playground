@@ -61,4 +61,34 @@ def batch_count_lowercase(texts):
     """
     return [count_lowercase(t) if t is not None else 0 for t in texts]
 
+
+def count_uppercase(text):
+    """
+    Count the number of uppercase letters in a string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of uppercase letters
+    Example:
+        >>> count_uppercase('abcDEF')
+        3
+    """
+    if not text:
+        return 0
+    return sum(1 for c in text if c.isupper())
+
+
+def batch_count_uppercase(texts):
+    """
+    Count the number of uppercase letters in each string in a batch.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of uppercase letters for each string.
+    Example:
+        >>> batch_count_uppercase(['abcDEF', 'ALLUP', 'mixedCase'])
+        [3, 5, 1]
+    """
+    return [count_uppercase(t) if t is not None else 0 for t in texts]
+
 ...
