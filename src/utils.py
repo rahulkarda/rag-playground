@@ -91,4 +91,34 @@ def batch_count_uppercase(texts):
     """
     return [count_uppercase(t) if t is not None else 0 for t in texts]
 
+
+def count_whitespace(text):
+    """
+    Count the number of whitespace characters in a string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of whitespace characters (spaces, tabs, newlines, etc)
+    Example:
+        >>> count_whitespace('a b\tc\n')
+        3
+    """
+    if not text:
+        return 0
+    return sum(1 for c in text if c.isspace())
+
+
+def batch_count_whitespace(texts):
+    """
+    Count the number of whitespace characters in each string in a batch.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of whitespace characters for each string.
+    Example:
+        >>> batch_count_whitespace(['a b', '\t\n ', 'None'])
+        [1, 3, 0]
+    """
+    return [count_whitespace(t) if t is not None else 0 for t in texts]
+
 ...
