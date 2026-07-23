@@ -20,6 +20,32 @@ Early — see [ROADMAP.md](ROADMAP.md) for the plan.
 pip install -r requirements.txt
 ```
 
+## Quickstart
+
+- Chunk a document:
+
+```python
+from src.chunker import fixed_size_chunks
+text = "Your document..."
+chunks = list(fixed_size_chunks(text, size=512, overlap=128))
+```
+
+- Summarize chunk statistics:
+
+```python
+from src.chunker import chunk_stats
+stats = chunk_stats(chunks)
+print(stats)
+```
+
+- Embed a batch (requires sentence-transformers):
+
+```python
+from src.embedder import SentenceTransformerEmbedder
+embedder = SentenceTransformerEmbedder("all-MiniLM-L6-v2")
+embs = embedder.embed_batch([c.text for c in chunks])
+```
+
 ## Chunker Usage
 
 You can use the `fixed_size_chunks` utility for quick chunking of large texts:
@@ -46,3 +72,25 @@ print(stats)
 ```
 
 See `src/chunker.py` for additional utilities: word/sentence/paragraph/line/token counters.
+
+## FAQ
+
+**Q:** Why do I get `ModuleNotFoundError: No module named 'sentence_transformers'`?
+
+**A:** Install `sentence-transformers`:
+
+```bash
+pip install sentence-transformers
+```
+
+**Q:** How do I run the evaluation CLI?
+
+**A:**
+
+```bash
+python -m src.main --input questions.jsonl --output results.jsonl --faithfulness
+```
+
+**Q:** Can I use my own chunker?
+
+**A:** Yes, see `src/recursive_chunker.py` and `src/semantic_chunker.py` for extensible chunking strategies.
