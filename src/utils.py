@@ -118,6 +118,9 @@ def batch_count_whitespace(texts):
     Example:
         >>> batch_count_whitespace(['a b', '\t\n ', 'None'])
         [1, 3, 0]
+
+    Each element in the returned list corresponds to the count of whitespace characters
+    (spaces, tabs, newlines, etc.) in each input string. If an input is None, returns 0.
     """
     return [count_whitespace(t) if t is not None else 0 for t in texts]
 
