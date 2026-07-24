@@ -124,4 +124,34 @@ def batch_count_whitespace(texts):
     """
     return [count_whitespace(t) if t is not None else 0 for t in texts]
 
+
+def count_newlines(text):
+    """
+    Count the number of newline ("\n") characters in a string.
+    Args:
+        text (str): Input string
+    Returns:
+        int: Number of newlines
+    Example:
+        >>> count_newlines('a\nb\nc')
+        2
+    """
+    if not text:
+        return 0
+    return text.count('\n')
+
+
+def batch_count_newlines(texts):
+    """
+    Count the number of newline ("\n") characters in each string in a batch.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of newlines for each string.
+    Example:
+        >>> batch_count_newlines(['a\nb', 'no newlines', '\n\n'])
+        [1, 0, 2]
+    """
+    return [count_newlines(t) if t is not None else 0 for t in texts]
+
 ...
