@@ -155,74 +155,55 @@ def count_lines(text: str) -> int:
 def count_tokens(text: str) -> int:
     """
     Count the number of tokens in a text string using whitespace splitting.
-    This is a rough proxy for true tokenization (not language-model specific).
+    This is a rough proxy for true tokenization.
     """
     if not text:
         return 0
-    return len(text.strip().split())
+    return len(text.split())
 
 
 def batch_count_tokens(texts: List[str]) -> List[int]:
     """
-    Count tokens for each string in a batch using whitespace splitting.
-    Args:
-        texts (list of str): List of input strings.
-    Returns:
-        list of int: token counts per string.
+    Count tokens for each text in a batch using whitespace splitting.
     """
     return [count_tokens(t) if t is not None else 0 for t in texts]
 
 
 def count_tiktoken_tokens(text: str, encoding_name: str = "cl100k_base") -> int:
     """
-    Count tokens in a string using tiktoken encoder (OpenAI tokenizer).
+    Count the number of tokens in a string using tiktoken (OpenAI tokenizer).
     Args:
-        text (str): Input string
-        encoding_name (str): tiktoken encoding, default "cl100k_base"
+        text (str): Input string.
+        encoding_name (str): tiktoken encoding name (default: cl100k_base for OpenAI models).
     Returns:
-        int: number of tokens
+        int: Number of tokens.
     """
-    import tiktoken
+    try:
+        import tiktoken
+    except ImportError:
+        raise ImportError("tiktoken is required for count_tiktoken_tokens")
     enc = tiktoken.get_encoding(encoding_name)
     return len(enc.encode(text))
 
 
 def batch_count_tiktoken_tokens(texts: List[str], encoding_name: str = "cl100k_base") -> List[int]:
     """
-    Count tiktoken tokens for each string in a batch.
-    Args:
-        texts (list of str): List of input strings.
-        encoding_name (str): tiktoken encoding
-    Returns:
-        list of int: token counts per string
+    Count tiktoken tokens for each text in a batch.
     """
-    import tiktoken
-    enc = tiktoken.get_encoding(encoding_name)
-    return [len(enc.encode(t)) if t is not None else 0 for t in texts]
+    return [count_tiktoken_tokens(t, encoding_name) if t is not None else 0 for t in texts]
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize statistics for a list of Chunk objects.
+    Summarize chunk statistics: number, average/min/max chunk size (chars, words).
 
     Args:
-        chunks (List[Chunk]): List of Chunk objects (each with .text, .start, .end).
+        chunks (List[Chunk]): List of Chunk objects (with .text field).
     Returns:
-        Dict[str, float]: Dictionary of statistics for the chunk list.
-            - num_chunks: number of chunks (int)
-            - avg_chunk_size_chars: average chunk size in characters (float)
-            - min_chunk_size_chars: minimum chunk size in characters (int)
-            - max_chunk_size_chars: maximum chunk size in characters (int)
-            - avg_chunk_size_words: average chunk size in words (float)
-            - min_chunk_size_words: minimum chunk size in words (int)
-            - max_chunk_size_words: maximum chunk size in words (int)
+        Dict[str, float]: Summary statistics.
 
-    Example:
-        >>> chunks = [Chunk(text='abc', start=0, end=3), Chunk(text='defg', start=3, end=7)]
-        >>> stats = chunk_stats(chunks)
-        >>> print(stats)
-        {'num_chunks': 2, 'avg_chunk_size_chars': 3.5, 'min_chunk_size_chars': 3, 'max_chunk_size_chars': 4,
-         'avg_chunk_size_words': 1.0, 'min_chunk_size_words': 1, 'max_chunk_size_words': 1}
+    Example output:
+        {'num_chunks': 5, 'avg_chunk_size_chars': 510.4, 'min_chunk_size_chars': 128, ...}
     """
     if not chunks:
         return {
@@ -234,14 +215,23 @@ def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
             'min_chunk_size_words': 0,
             'max_chunk_size_words': 0,
         }
-    sizes_chars = [len(chunk.text) for chunk in chunks]
-    sizes_words = [count_words(chunk.text) for chunk in chunks]
+    # Compute character sizes for each chunk
+    chunk_sizes_chars = [len(chunk.text) for chunk in chunks]
+    # Compute word counts for each chunk
+    chunk_sizes_words = [count_words(chunk.text) for chunk in chunks]
+    num_chunks = len(chunks)
+    avg_chunk_size_chars = sum(chunk_sizes_chars) / num_chunks
+    min_chunk_size_chars = min(chunk_sizes_chars)
+    max_chunk_size_chars = max(chunk_sizes_chars)
+    avg_chunk_size_words = sum(chunk_sizes_words) / num_chunks
+    min_chunk_size_words = min(chunk_sizes_words)
+    max_chunk_size_words = max(chunk_sizes_words)
     return {
-        'num_chunks': len(chunks),
-        'avg_chunk_size_chars': sum(sizes_chars) / len(sizes_chars),
-        'min_chunk_size_chars': min(sizes_chars),
-        'max_chunk_size_chars': max(sizes_chars),
-        'avg_chunk_size_words': sum(sizes_words) / len(sizes_words),
-        'min_chunk_size_words': min(sizes_words),
-        'max_chunk_size_words': max(sizes_words),
+        'num_chunks': num_chunks,
+        'avg_chunk_size_chars': avg_chunk_size_chars,
+        'min_chunk_size_chars': min_chunk_size_chars,
+        'max_chunk_size_chars': max_chunk_size_chars,
+        'avg_chunk_size_words': avg_chunk_size_words,
+        'min_chunk_size_words': min_chunk_size_words,
+        'max_chunk_size_words': max_chunk_size_words,
     }
