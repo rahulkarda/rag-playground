@@ -124,6 +124,20 @@ def count_sentences(text: str) -> int:
         return 1 if remainder else 0
 
 
+def batch_count_sentences(texts: List[str]) -> List[int]:
+    """
+    Count the number of sentences in each string in a batch.
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of sentences for each string.
+    Example:
+        >>> batch_count_sentences(["This is one. This is two!", "No punctuation", "Question?"])
+        [2, 1, 1]
+    """
+    return [count_sentences(t) if t is not None else 0 for t in texts]
+
+
 def count_characters(text: str) -> int:
     """
     Count the number of characters in a text string.
@@ -159,67 +173,73 @@ def count_tokens(text: str) -> int:
     """
     if not text:
         return 0
-    return len(text.split())
+    return len(text.strip().split())
 
 
 def batch_count_tokens(texts: List[str]) -> List[int]:
     """
-    Count tokens for each text in a batch using whitespace splitting.
+    Count the number of tokens in each string in a batch (whitespace split).
+    Args:
+        texts (list of str): List of input strings.
+    Returns:
+        list of int: Number of tokens for each string.
     """
     return [count_tokens(t) if t is not None else 0 for t in texts]
 
 
-def count_tiktoken_tokens(text: str, encoding_name: str = "cl100k_base") -> int:
+def count_tiktoken_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
     """
-    Count the number of tokens in a string using tiktoken (OpenAI tokenizer).
+    Count the number of tokens in a string using tiktoken for a given model.
     Args:
-        text (str): Input string.
-        encoding_name (str): tiktoken encoding name (default: cl100k_base for OpenAI models).
+        text (str): Input string
+        model (str): Model name for tiktoken encoding (default: gpt-3.5-turbo)
     Returns:
-        int: Number of tokens.
+        int: Number of tokens
     """
-    try:
-        import tiktoken
-    except ImportError:
-        raise ImportError("tiktoken is required for count_tiktoken_tokens")
-    enc = tiktoken.get_encoding(encoding_name)
+    import tiktoken
+    enc = tiktoken.encoding_for_model(model)
     return len(enc.encode(text))
 
 
-def batch_count_tiktoken_tokens(texts: List[str], encoding_name: str = "cl100k_base") -> List[int]:
+def batch_count_tiktoken_tokens(texts: List[str], model: str = "gpt-3.5-turbo") -> List[int]:
     """
-    Count tiktoken tokens for each text in a batch.
+    Count the number of tokens in each string in a batch using tiktoken for a given model.
+    Args:
+        texts (list of str): List of input strings.
+        model (str): Model name for tiktoken encoding.
+    Returns:
+        list of int: Number of tokens for each string.
     """
-    return [count_tiktoken_tokens(t, encoding_name) if t is not None else 0 for t in texts]
+    import tiktoken
+    enc = tiktoken.encoding_for_model(model)
+    return [len(enc.encode(t)) if t is not None else 0 for t in texts]
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize chunk statistics: number, average/min/max chunk size (chars, words).
-
+    Summarize chunk statistics (number, sizes, word counts).
     Args:
-        chunks (List[Chunk]): List of Chunk objects (with .text field).
+        chunks (list of Chunk): List of Chunk objects.
     Returns:
-        Dict[str, float]: Summary statistics.
-
-    Example output:
-        {'num_chunks': 5, 'avg_chunk_size_chars': 510.4, 'min_chunk_size_chars': 128, ...}
+        dict: Stats: num_chunks, avg/min/max chunk size (chars, words)
+    Example:
+        >>> chunks = [Chunk("abc", 0, 3), Chunk("def ghi", 3, 10)]
+        >>> chunk_stats(chunks)
+        {'num_chunks': 2, ...}
     """
-    if not chunks:
+    num_chunks = len(chunks)
+    if num_chunks == 0:
         return {
             'num_chunks': 0,
-            'avg_chunk_size_chars': 0.0,
+            'avg_chunk_size_chars': 0,
             'min_chunk_size_chars': 0,
             'max_chunk_size_chars': 0,
-            'avg_chunk_size_words': 0.0,
+            'avg_chunk_size_words': 0,
             'min_chunk_size_words': 0,
             'max_chunk_size_words': 0,
         }
-    # Compute character sizes for each chunk
-    chunk_sizes_chars = [len(chunk.text) for chunk in chunks]
-    # Compute word counts for each chunk
-    chunk_sizes_words = [count_words(chunk.text) for chunk in chunks]
-    num_chunks = len(chunks)
+    chunk_sizes_chars = [len(c.text) for c in chunks]
+    chunk_sizes_words = [count_words(c.text) for c in chunks]
     avg_chunk_size_chars = sum(chunk_sizes_chars) / num_chunks
     min_chunk_size_chars = min(chunk_sizes_chars)
     max_chunk_size_chars = max(chunk_sizes_chars)
