@@ -30,13 +30,13 @@ class Chunk:
     end: int
 
 
-def fixed_size_chunks(text: str, size: int = 1024, overlap: int = 128) -> Iterator[Chunk]:
+def fixed_size_chunks(text: str, size: int = 2048, overlap: int = 128) -> Iterator[Chunk]:
     """
     Split text into fixed-size chunks with optional overlap.
 
     Args:
         text (str): Input text to chunk.
-        size (int, optional): Maximum length of each chunk (in characters). Default is 1024.
+        size (int, optional): Maximum length of each chunk (in characters). Default is 2048.
         overlap (int, optional): Number of characters to overlap between consecutive chunks. Default is 128.
 
     Yields:
@@ -152,116 +152,95 @@ def batch_count_sentences(texts: List[str]) -> List[int]:
     return [count_sentences(t) if t is not None else 0 for t in texts]
 
 
-def count_characters(text: str) -> int:
-    """
-    Count the number of characters in a text string.
-    """
-    if text is None:
-        return 0
-    return len(text)
-
-
 def count_paragraphs(text: str) -> int:
     """
-    Count the number of paragraphs in a text string.
-    A paragraph is defined as a block of text separated by one or more blank lines.
+    Count the number of paragraphs (split by blank lines).
     """
-    paragraphs = [p for p in text.split('\n\n') if p.strip()] if text else []
-    return len(paragraphs)
+    if not text or not text.strip():
+        return 0
+    paras = [p for p in text.split('\n\n') if p.strip()]
+    return len(paras)
+
+
+def batch_count_paragraphs(texts: List[str]) -> List[int]:
+    """
+    Count the number of paragraphs in each string in a batch.
+    """
+    return [count_paragraphs(t) if t is not None else 0 for t in texts]
 
 
 def count_lines(text: str) -> int:
     """
     Count the number of lines in a text string.
     """
-    if text is None:
+    if not text:
         return 0
-    return len(text.splitlines())
+    return len(text.split('\n'))
+
+
+def batch_count_lines(texts: List[str]) -> List[int]:
+    """
+    Count the number of lines in each string in a batch.
+    """
+    return [count_lines(t) if t is not None else 0 for t in texts]
 
 
 def count_tokens(text: str) -> int:
     """
-    Count the number of whitespace-separated tokens in a text string.
+    Count the number of tokens (space-separated) in a text string.
     """
-    if text is None:
+    if not text:
         return 0
-    return len(text.strip().split())
+    return len(text.split())
 
 
 def batch_count_tokens(texts: List[str]) -> List[int]:
     """
     Count the number of tokens in each string in a batch.
-    Args:
-        texts (list of str): List of input strings.
-    Returns:
-        list of int: Number of tokens for each string.
-    Example:
-        >>> batch_count_tokens(["a b c", "one two three four"])
-        [3, 4]
     """
     return [count_tokens(t) if t is not None else 0 for t in texts]
 
 
-def count_tiktoken_tokens(text: str, model_name: str = "gpt-3.5-turbo") -> int:
+def count_tiktoken_tokens(text: str, model: str = "gpt2") -> int:
     """
-    Count the number of tokens in a text string using tiktoken for the specified model.
+    Count the number of tokens using tiktoken tokenizer for a given model.
     Args:
         text (str): Input text
-        model_name (str): Model name (default: "gpt-3.5-turbo")
+        model (str): Model name (default: "gpt2")
     Returns:
         int: Number of tokens
     """
     import tiktoken
-    enc = tiktoken.encoding_for_model(model_name)
+    enc = tiktoken.get_encoding(model)
     return len(enc.encode(text))
 
 
-def batch_count_tiktoken_tokens(texts: List[str], model_name: str = "gpt-3.5-turbo") -> List[int]:
+def batch_count_tiktoken_tokens(texts: List[str], model: str = "gpt2") -> List[int]:
     """
-    Count the number of tokens in each string in a batch using tiktoken.
-    Args:
-        texts (list of str): List of input strings.
-        model_name (str): Model name (default: "gpt-3.5-turbo")
-    Returns:
-        list of int: Number of tokens for each string.
+    Count tiktoken tokens for each string in a batch.
     """
     import tiktoken
-    enc = tiktoken.encoding_for_model(model_name)
+    enc = tiktoken.get_encoding(model)
     return [len(enc.encode(t)) if t is not None else 0 for t in texts]
 
 
 def chunk_stats(chunks: List[Chunk]) -> Dict[str, float]:
     """
-    Summarize chunk statistics: number of chunks, average/min/max sizes (chars, words).
-    Args:
-        chunks (List[Chunk]): List of chunk objects.
+    Summarize statistics for a set of chunks.
     Returns:
-        dict: Stats summary.
-
-    Example:
-        >>> chunks = [Chunk("abc def",0,7), Chunk("ghi",7,10)]
-        >>> chunk_stats(chunks)
-        {
-            'num_chunks': 2,
-            'avg_chunk_size_chars': 5.5,
-            'min_chunk_size_chars': 3,
-            'max_chunk_size_chars': 7,
-            'avg_chunk_size_words': 2.0,
-            'min_chunk_size_words': 1,
-            'max_chunk_size_words': 2
-        }
+        dict with num_chunks, avg/min/max chunk size (chars, words)
     """
-    num_chunks = len(chunks)
-    if num_chunks == 0:
+    if not chunks:
         return {
             'num_chunks': 0,
-            'avg_chunk_size_chars': 0.0,
+            'avg_chunk_size_chars': 0,
             'min_chunk_size_chars': 0,
             'max_chunk_size_chars': 0,
-            'avg_chunk_size_words': 0.0,
+            'avg_chunk_size_words': 0,
             'min_chunk_size_words': 0,
             'max_chunk_size_words': 0,
         }
+    num_chunks = len(chunks)
     chunk_sizes_chars = [len(c.text) for c in chunks]
     chunk_sizes_words = [count_words(c.text) for c in chunks]
     avg_chunk_size_chars = sum(chunk_sizes_chars) / num_chunks
