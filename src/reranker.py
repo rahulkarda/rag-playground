@@ -1,3 +1,19 @@
+"""
+BM25 reranking utility for retrieval-augmented generation (RAG).
+
+This module provides:
+- BM25Reranker: reranks a list of candidate documents given a query
+- Useful as a reranking stage after initial retrieval (dense, hybrid, etc)
+
+Usage:
+    from src.reranker import BM25Reranker
+    reranker = BM25Reranker(k=5)
+    reranked = reranker.rerank(query, candidates)
+    # candidates: list of dicts with 'text' field
+    # reranked: top-k candidates with added 'bm25_score'
+
+Relies on rank_bm25 for sparse keyword matching. Designed for quick experimentation with reranking strategies.
+"""
 from typing import List, Dict, Any, Optional
 import numpy as np
 
