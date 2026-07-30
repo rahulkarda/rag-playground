@@ -7,6 +7,7 @@ Working through these in roughly this order. Items get crossed off as they land.
 - [x] Recursive chunker that respects markdown/code boundaries
 - [x] Semantic chunker using embedding similarity
 - [x] Chunker comparison harness on a small corpus
+- [x] Batch whitespace counting utility
 
 ## Phase 2: embeddings + storage
 - [x] Wrapper for sentence-transformers models
